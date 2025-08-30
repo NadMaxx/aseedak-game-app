@@ -1,0 +1,61 @@
+name: aseedak
+description: "A new Flutter project."
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  provider:
+  get_it:
+  dio:
+  chucker_flutter:
+  flutter_screenutil:
+  pinput:
+
+  cached_network_image:
+  flutter_svg:
+  badges:
+
+  shared_preferences:
+  uuid:
+  lottie:
+  package_info_plus:
+  intl:
+  path_provider:
+  permission_handler:
+  smooth_page_indicator:
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  change_app_package_name: ^1.5.0
+
+
+
+
+flutter:
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/svgs/
+    - assets/pngs/
+#    - assets/animations/
+
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/to/resolution-aware-images
+
+
+  fonts:
+    - family: Teko
+      fonts:
+        - asset: assets/fonts/teko.ttf
+    - family: Kanit
+      fonts:
+        - asset: assets/fonts/Kanit.ttf
+
+
