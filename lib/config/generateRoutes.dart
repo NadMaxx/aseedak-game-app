@@ -3,12 +3,13 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../view/start/auth/login/login_view.dart';
+import '../view/start/auth/login/login_vm.dart';
 import '../view/start/onboarding/onboarding.dart';
 import '../view/start/splash/splash_view.dart';
 import '../view/start/splash/splash_vm.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
-  log("Route data: ${settings.arguments}");
 
   WidgetBuilder builder;
   switch (settings.name) {
@@ -24,13 +25,13 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       builder = (context) => const OnboardingScreen();
       break;
     //
-    // case LoginView.routeName:
-    //   builder =
-    //       (context) => ChangeNotifierProvider(
-    //         create: (context) => LoginVm(),
-    //         child: const LoginView(),
-    //       );
-    //   break;
+    case LoginView.routeName:
+      builder =
+          (context) => ChangeNotifierProvider(
+            create: (context) => LoginVm(),
+            child: const LoginView(),
+          );
+      break;
     //
     // case ForgotPassword.routeName:
     //   builder =
