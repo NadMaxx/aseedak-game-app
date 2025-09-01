@@ -43,6 +43,7 @@ flutter:
   assets:
     - assets/svgs/
     - assets/pngs/
+    - assets/pngs/fields/
 #    - assets/animations/
 
 

@@ -5,6 +5,7 @@ extension GetSvgPath on String {
   String get toSvgPath => 'assets/svgs/$this.svg';
   String get toSvgNavPath => 'assets/svg/nav/$this.svg';
   String get toPngPath => 'assets/pngs/$this.png';
+  String get toTextField => 'assets/pngs/fields/$this.png';
   String get toCartoon => 'assets/images/cartoons/$this.png';
   String get toBottomNavPath => 'assets/svg/bottomNav/$this.svg';
   String get toCoinsIconPath => 'assets/svg/icons/$this.svg';

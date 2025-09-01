@@ -22,4 +22,6 @@ class AppColors {
   static var border = const Color(0xffE6E6E6);
 
   static var greyBackground = const Color(0xffF1F3F5);
+
+  static var red = Color(0xffCB1122);
 }

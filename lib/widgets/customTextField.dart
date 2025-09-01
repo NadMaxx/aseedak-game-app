@@ -69,21 +69,26 @@ class _CustomTextFieldState extends State<CustomTextField> {
       onChanged: widget.onChanged,
       onTap: widget.onTap,
       style: TextStyle(
-        color: widget.textColor ?? AppColors.black,
-        fontSize: widget.fontSize ?? 14.sp,
+        color: widget.textColor ?? AppColors.white,
+        fontSize: widget.fontSize ?? 16.sp,
+        fontWeight: FontWeight.bold,
+        fontFamily: "Kanit"
       ),
       decoration: InputDecoration(
         hintText: widget.hintText,
         hintStyle: TextStyle(
-          color: AppColors.textColor,
-          fontSize: 12.sp,
+          color: AppColors.white,
+          fontSize: 16.sp,
+            fontWeight: FontWeight.bold,
+            fontFamily: "Kanit"
+
         ),
         prefixIcon: widget.prefix == null
             ? null
             : Padding(
           padding: EdgeInsets.symmetric(horizontal: 12.w),
-          child: SvgPicture.asset(
-            widget.prefix!.toSvgPath,
+          child: Image.asset(
+            widget.prefix!.toTextField,
             height: 20.h,
             width: 20.w,
             fit: BoxFit.scaleDown,
@@ -104,8 +109,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
         )
             : widget.suffixIcon,
         filled: true,
-        fillColor: Color(0xffF5F5F5),
-        contentPadding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 12.w),
+        fillColor: Color(0xff324B67),
+        contentPadding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 20.w),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.r),
           borderSide: BorderSide(

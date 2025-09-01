@@ -1,10 +1,12 @@
 import 'dart:developer';
 
+import 'package:aseedak/view/start/auth/sign_up/sign_up_vm.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../view/start/auth/login/login_view.dart';
 import '../view/start/auth/login/login_vm.dart';
+import '../view/start/auth/sign_up/sign_up.dart';
 import '../view/start/onboarding/onboarding.dart';
 import '../view/start/splash/splash_view.dart';
 import '../view/start/splash/splash_vm.dart';
@@ -31,6 +33,14 @@ Route<dynamic> generateRoute(RouteSettings settings) {
             create: (context) => LoginVm(),
             child: const LoginView(),
           );
+      break;
+
+    case SignUpView.routeName:
+      builder =
+          (context) => ChangeNotifierProvider(
+        create: (context) => SignUpVm(),
+        child: const SignUpView(),
+      );
       break;
     //
     // case ForgotPassword.routeName:
