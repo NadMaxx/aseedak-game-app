@@ -1,15 +1,23 @@
 import 'dart:developer';
 
+import 'package:aseedak/view/start/auth/change_password/change_password_vm.dart';
+import 'package:aseedak/view/start/auth/forgot_password/forgot_password_vm.dart';
+import 'package:aseedak/view/start/auth/otp_screen/otp_vm.dart';
 import 'package:aseedak/view/start/auth/sign_up/sign_up_vm.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../data/models/passModels/SuccessPassModel.dart';
+import '../view/start/auth/change_password/change_password.dart';
+import '../view/start/auth/forgot_password/forgot_password.dart';
 import '../view/start/auth/login/login_view.dart';
 import '../view/start/auth/login/login_vm.dart';
+import '../view/start/auth/otp_screen/otp_screen.dart';
 import '../view/start/auth/sign_up/sign_up.dart';
 import '../view/start/onboarding/onboarding.dart';
 import '../view/start/splash/splash_view.dart';
 import '../view/start/splash/splash_vm.dart';
+import '../view/success_screen/success_screen.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
 
@@ -51,18 +59,32 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     //       );
     //   break;
     //
-    // case SuccessScreen.routeName:
-    //   SuccessPassModel successData = settings.arguments as SuccessPassModel;
-    //   builder = (context) => SuccessScreen(model: successData);
-    //   break;
+    case SuccessScreen.routeName:
+      SuccessPassModel successData = settings.arguments as SuccessPassModel;
+      builder = (context) => SuccessScreen(model: successData);
+      break;
     //
-    // case HomeView.routeName:
-    //   builder =
-    //       (context) => ChangeNotifierProvider(
-    //         create: (context) => HomeVm(),
-    //         child: const HomeView(),
-    //       );
-    //   break;
+    case ForgotPassword.routeName:
+      builder =
+          (context) => ChangeNotifierProvider(
+            create: (context) => ForgotPasswordVm(),
+            child: const ForgotPassword(),
+          );
+      break;
+      case OtpScreen.routeName:
+      builder =
+          (context) => ChangeNotifierProvider(
+            create: (context) => OTPVm(),
+            child: const OtpScreen(),
+          );
+      break;
+    case ChangePassword.routeName:
+      builder =
+          (context) => ChangeNotifierProvider(
+        create: (context) => ChangePasswordVM(),
+        child: const ChangePassword(),
+      );
+      break;
     //
     // case FestiveView.routeName:
     //   builder =

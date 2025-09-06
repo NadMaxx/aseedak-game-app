@@ -1,9 +1,11 @@
 import 'dart:ui';
 
+import 'package:aseedak/data/models/passModels/SuccessPassModel.dart';
 import 'package:aseedak/data/utils/app_colors.dart';
 import 'package:aseedak/data/utils/app_constants.dart';
 import 'package:aseedak/data/utils/string_helpers.dart';
 import 'package:aseedak/view/start/auth/sign_up/sign_up.dart';
+import 'package:aseedak/view/success_screen/success_screen.dart';
 import 'package:aseedak/widgets/customText.dart';
 import 'package:aseedak/widgets/customTextField.dart';
 import 'package:aseedak/widgets/custom_button.dart';
@@ -14,6 +16,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../widgets/blurred.dart';
+import '../forgot_password/forgot_password.dart';
+import '../forgot_password/forgot_password.dart';
 import 'login_vm.dart';
 
 class LoginView extends StatelessWidget {
@@ -116,37 +120,44 @@ class LoginView extends StatelessWidget {
                           ),
                           SizedBox(height: 24.h),
 
-                          Row(
-                            children: [
-                              CustomText(
-                                text: "Forgot Password? ",
-                                fontFamily: "Kanit",
-                                fontSize: 16.sp,
-                                color: AppColors.white,
-                                fontWeight: FontWeight.w300,
-                              ),
-                              CustomText(
-                                text: "Recover",
-                                fontFamily: "Kanit",
-                                decoration: TextDecoration.underline,
-                                decorationColor: AppColors.red,
-                                fontSize: 16.sp,
-                                color: AppColors.red,
-                                fontWeight: FontWeight.w300,
-                              ),
-                              SizedBox(width: 10.w),
-                              Expanded(
-                                child: SlantedButtonStack(
-                                  text: 'LOGIN',
-                                  onPressed: () {
-                                    if (vm.formKey.currentState?.validate() ??
-                                        false) {
-                                      // TODO: handle login
-                                    }
-                                  },
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, ForgotPassword.routeName);
+                            },
+                            child: Row(
+                              children: [
+                                CustomText(
+                                  text: "Forgot Password? ",
+                                  fontFamily: "Kanit",
+                                  fontSize: 16.sp,
+                                  color: AppColors.white,
+                                  fontWeight: FontWeight.w300,
                                 ),
-                              ),
-                            ],
+                                CustomText(
+                                  text: "Recover",
+                                  fontFamily: "Kanit",
+                                  decoration: TextDecoration.underline,
+                                  decorationColor: AppColors.red,
+                                  fontSize: 16.sp,
+                                  color: AppColors.red,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                                SizedBox(width: 10.w),
+                                Expanded(
+                                  child: SlantedButtonStack(
+                                    text: 'LOGIN',
+                                    onPressed: () {
+
+                                      if (vm.formKey.currentState?.validate() ??
+                                          false) {
+                                        // TODO: handle login
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),

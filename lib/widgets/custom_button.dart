@@ -44,88 +44,94 @@ class SlantedButtonStack extends StatelessWidget {
         final double bottomHeight = topHeight + (borderThickness * 2);
         final double bottomCutActual = cutRatio * bottomWidth;
 
-        return SizedBox(
-          width: availableWidth,
-          height: bottomHeight,
-          child: Stack(
-            children: [
-              // --- Bottom Gradient Layer (Border) ---
-              Positioned.fill(
-                child: ClipPath(
-                  clipper: _ParallelogramClipperByCut(
-                    cut: bottomCutActual,
-                    leanLeft: leanLeft,
-                  ),
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.white,
-                          Color(0xffCB1122),
-                          Color(0xffCB1122),
-                          Color(0xffCB1122),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
+        return Theme(
+          data: Theme.of(context).copyWith(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+          ),
+          child: InkWell(
+            onTap: onPressed,
+            child: SizedBox(
+              width: availableWidth,
+              height: bottomHeight,
+              child: Stack(
+                children: [
+                  // --- Bottom Gradient Layer (Border) ---
+                  Positioned.fill(
+                    child: ClipPath(
+                      clipper: _ParallelogramClipperByCut(
+                        cut: bottomCutActual,
+                        leanLeft: leanLeft,
                       ),
-                    ),
-                  ),
-                ),
-              ),
-
-              // --- Top Main Button (Centered) ---
-              Center(
-                child: GestureDetector(
-                  onTap: onPressed,
-                  child: ClipPath(
-                    clipper: _ParallelogramClipperByCut(
-                      cut: topCutActual,
-                      leanLeft: leanLeft,
-                    ),
-                    child: Container(
-                      height: topHeight,
-                      width: topWidth,
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Color(0xFFbf1020),
-                            Color(0xFFbf1020),
-                            Color(0xFF840B16),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.white,
+                              Color(0xffCB1122),
+                              Color(0xffCB1122),
+                              Color(0xffCB1122),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
                         ),
                       ),
-                      child: Center(
-                        child: ThickShadowText(
-                          text: text,
-                          fontSize: fontSize,
-                          fontWeight: FontWeight.w900,
-                          textColor: Colors.white,
-                          shadowColor: Colors.black,
-                          shadowThickness: 2.0,  // How far the shadow extends
-                          shadowBlur: 0.0,       // Additional blur (optional)
-                          letterSpacing: 1.5,
-                        )
+                    ),
+                  ),
+
+                  // --- Top Main Button (Centered) ---
+                  Center(
+                    child: ClipPath(
+                      clipper: _ParallelogramClipperByCut(
+                        cut: topCutActual,
+                        leanLeft: leanLeft,
+                      ),
+                      child: Container(
+                        height: topHeight,
+                        width: topWidth,
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Color(0xFFbf1020),
+                              Color(0xFFbf1020),
+                              Color(0xFF840B16),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                        ),
+                        child: Center(
+                          child: ThickShadowText(
+                            text: text,
+                            fontSize: fontSize,
+                            fontWeight: FontWeight.w900,
+                            textColor: Colors.white,
+                            shadowColor: Colors.black,
+                            shadowThickness: 2.0,  // How far the shadow extends
+                            shadowBlur: 0.0,       // Additional blur (optional)
+                            letterSpacing: 1.5,
+                          )
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
 
-              // --- SVG Overlay (only if wide enough) ---
-              if (topWidth >= 280)
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 18),
-                    child: SvgPicture.asset(
-                      "assets/svgs/cut.svg",
-                      height: svgHeight,
-                      width: (svgWidth / 320) * topWidth,
+                  // --- SVG Overlay (only if wide enough) ---
+                  if (topWidth >= 280)
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 18),
+                        child: SvgPicture.asset(
+                          "assets/svgs/cut.svg",
+                          height: svgHeight,
+                          width: (svgWidth / 320) * topWidth,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-            ],
+                ],
+              ),
+            ),
           ),
         );
       },
