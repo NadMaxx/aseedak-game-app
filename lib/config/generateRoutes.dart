@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:aseedak/view/home/dashboard/dashboard_vm.dart';
+import 'package:aseedak/view/home/profile/profile_vm.dart';
 import 'package:aseedak/view/start/auth/change_password/change_password_vm.dart';
 import 'package:aseedak/view/start/auth/forgot_password/forgot_password_vm.dart';
 import 'package:aseedak/view/start/auth/otp_screen/otp_vm.dart';
@@ -8,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../data/models/passModels/SuccessPassModel.dart';
+import '../view/home/dashboard/dashboard_screen.dart';
+import '../view/home/profile/profile_screen.dart';
 import '../view/start/auth/change_password/change_password.dart';
 import '../view/start/auth/forgot_password/forgot_password.dart';
 import '../view/start/auth/login/login_view.dart';
@@ -85,110 +89,20 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         child: const ChangePassword(),
       );
       break;
-    //
-    // case FestiveView.routeName:
-    //   builder =
-    //       (context) => ChangeNotifierProvider(
-    //         create: (context) => FestiveVm(),
-    //         child: const FestiveView(),
-    //       );
-    //   break;
-    //
-    // case TrestleBoard.routeName:
-    //   builder =
-    //       (context) => ChangeNotifierProvider(
-    //         create: (context) => TrestleBoardVm(),
-    //         child: const TrestleBoard(),
-    //       );
-    //   break;
-    //
-    // case MenuView.routeName:
-    //   String data = settings.arguments as String;
-    //   builder =
-    //       (context) => ChangeNotifierProvider(
-    //         create: (context) => MenuVm(id: data),
-    //         child: const MenuView(),
-    //       );
-    //   break;
-    //
-    // case PhonebookView.routeName:
-    //   builder =
-    //       (context) => ChangeNotifierProvider(
-    //         create: (context) => PhonebookVm(),
-    //         child: const PhonebookView(),
-    //       );
-    //   break;
-    //
-    // case DocsView.routeName:
-    //   builder =
-    //       (context) => ChangeNotifierProvider(
-    //         create: (context) => DocsVm(),
-    //         child: const DocsView(),
-    //       );
-    //   break;
-    //
-    // case ChatListView.routeName:
-    //   builder =
-    //       (context) => ChangeNotifierProvider(
-    //         create: (context) => ChatListVm(),
-    //         child: ChatListView(),
-    //       );
-    //   break;
-    //
-    // case SupportView.routeName:
-    //   builder =
-    //       (context) => ChangeNotifierProvider(
-    //     create: (context) => SupportVm(),
-    //     child: SupportView(),
-    //   );
-    //   break;
-    //
-    // case CalendarScreen.routeName:
-    //   builder =
-    //       (context) => ChangeNotifierProvider(
-    //     create: (context) => CalendarVm(),
-    //     child: CalendarScreen(),
-    //   );
-    //   break;
-    //
-    // case MembershipView.routeName:
-    //   builder =
-    //       (context) => ChangeNotifierProvider(
-    //         create: (context) => MembershipVm(),
-    //         child: const MembershipView(),
-    //       );
-    //   break;
-    //
-    // case MeetingsView.routeName:
-    //   String data = settings.arguments as String;
-    //
-    //   builder =
-    //       (context) => ChangeNotifierProvider(
-    //     create: (context) => MeetingsVm(id: data),
-    //     child: const MeetingsView(),
-    //   );
-    //   break;
-    //
-    // case NotificationView.route:
-    //   builder =
-    //       (context) => ChangeNotifierProvider(
-    //     create: (context) => NotificationVm(),
-    //     child: const NotificationView(),
-    //   );
-    //   break;
-    // case ChatView.routeName:
-    //   ChatPassModel data = settings.arguments as ChatPassModel;
-    //   builder = (context) => ChangeNotifierProvider(
-    //       create: (context) => ChatVm(chatPassModel: data),
-    //       child: const ChatView());
-    //   break;
-    // case DexChartView.route:
-    //   builder = (context) => MultiProvider(providers: [
-    //     ChangeNotifierProvider(create: (context) => DexChartVm()),
-    //     ChangeNotifierProvider(create: (context) => CustomTokenVm()),
-    //   ], child: const DexChartView());
-    //   break;
-
+    case DashboardScreen.routeName:
+      builder =
+          (context) => ChangeNotifierProvider(
+        create: (context) => DashboardVm(),
+        child: const DashboardScreen(),
+      );
+      break;
+      case ProfileScreen.routeName:
+      builder =
+          (context) => ChangeNotifierProvider(
+        create: (context) => ProfileVm(),
+        child: const ProfileScreen(),
+      );
+      break;
     default:
       return errorRoute();
   }

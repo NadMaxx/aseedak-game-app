@@ -4,6 +4,7 @@ import 'package:aseedak/data/models/passModels/SuccessPassModel.dart';
 import 'package:aseedak/data/utils/app_colors.dart';
 import 'package:aseedak/data/utils/app_constants.dart';
 import 'package:aseedak/data/utils/string_helpers.dart';
+import 'package:aseedak/view/home/dashboard/dashboard_screen.dart';
 import 'package:aseedak/view/start/auth/sign_up/sign_up.dart';
 import 'package:aseedak/view/success_screen/success_screen.dart';
 import 'package:aseedak/widgets/customText.dart';
@@ -148,6 +149,7 @@ class LoginView extends StatelessWidget {
                                   child: SlantedButtonStack(
                                     text: 'LOGIN',
                                     onPressed: () {
+                                      Navigator.pushNamed(context, DashboardScreen.routeName);
 
                                       if (vm.formKey.currentState?.validate() ??
                                           false) {
