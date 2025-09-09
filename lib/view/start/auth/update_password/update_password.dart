@@ -14,9 +14,9 @@ import '../../../../widgets/custom_button.dart';
 import '../../../success_screen/success_screen.dart';
 import '../otp_screen/otp_screen.dart';
 
-class ChangePassword extends StatelessWidget {
-  static const String routeName = '/changePassword';
-  const ChangePassword({super.key});
+class UpdatePassword extends StatelessWidget {
+  static const String routeName = '/updatePassword';
+  const UpdatePassword({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,11 +33,11 @@ class ChangePassword extends StatelessWidget {
                 ),
                 child: SlantedButtonStack(text: "save new password".toUpperCase(), onPressed: (){
                   Navigator.pushNamed(context, SuccessScreen.routeName, arguments: SuccessPassModel(
-                    title: "Password Reset Successfully!",
-                    buttonText: "ENTER OTP",
-                    route: LoginView.routeName,
-                    message: "Your password has been successfully reset. You can now log in with your new password. If you need further assistance, feel free to reach out!",
-                    removeRoute: true,
+                    title: "Password Updated Successfully!",
+                    buttonText: "OK, Great",
+                    route: "pop",
+                    message: "Your password has been successfully updated. You can now log in with your new password. If you need further assistance, feel free to reach out!",
+                    removeRoute: false,
                   ));
                 })
             ),
@@ -62,7 +62,7 @@ class ChangePassword extends StatelessWidget {
             children: [
               SizedBox(height: 30.h),
               CustomText(
-                text: "Reset Password",
+                text: "Update Password",
                 fontSize: 40.sp,
                 fontWeight: FontWeight.w400,
                 color: Colors.white,
@@ -77,7 +77,29 @@ class ChangePassword extends StatelessWidget {
               ),
               SizedBox(height: 50.h),
               CustomText(
-                text: "Enter New Password",
+                text: "Current Password",
+                fontSize: 16.sp,
+                fontWeight: FontWeight.normal,
+                color: Colors.white,
+                textAlign: TextAlign.center,
+                fontFamily: "Kanit",
+              ),
+              CustomTextField(
+                controller: vm.passwordController,
+                prefix: "lock",
+                hintText: "Enter Password",
+                obscureText: true,
+                validator: (v) {
+                  if(v == null || v.isEmpty){
+                    return "Password is required";
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 20.h),
+
+              CustomText(
+                text: "New Password",
                 fontSize: 16.sp,
                 fontWeight: FontWeight.normal,
                 color: Colors.white,

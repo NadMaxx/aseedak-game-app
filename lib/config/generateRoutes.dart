@@ -1,7 +1,10 @@
 import 'dart:developer';
 
 import 'package:aseedak/view/home/dashboard/dashboard_vm.dart';
+import 'package:aseedak/view/home/game_room/game_room_vm.dart';
+import 'package:aseedak/view/home/profile/profile_settings/profile_settings_vm.dart';
 import 'package:aseedak/view/home/profile/profile_vm.dart';
+import 'package:aseedak/view/home/wait_room/wait_room_vm.dart';
 import 'package:aseedak/view/start/auth/change_password/change_password_vm.dart';
 import 'package:aseedak/view/start/auth/forgot_password/forgot_password_vm.dart';
 import 'package:aseedak/view/start/auth/otp_screen/otp_vm.dart';
@@ -11,13 +14,18 @@ import 'package:provider/provider.dart';
 
 import '../data/models/passModels/SuccessPassModel.dart';
 import '../view/home/dashboard/dashboard_screen.dart';
+import '../view/home/game_room/game_room.dart';
+import '../view/home/profile/policies/policies_page.dart';
 import '../view/home/profile/profile_screen.dart';
+import '../view/home/profile/profile_settings/profile_settings.dart';
+import '../view/home/wait_room/wait_room.dart';
 import '../view/start/auth/change_password/change_password.dart';
 import '../view/start/auth/forgot_password/forgot_password.dart';
 import '../view/start/auth/login/login_view.dart';
 import '../view/start/auth/login/login_vm.dart';
 import '../view/start/auth/otp_screen/otp_screen.dart';
 import '../view/start/auth/sign_up/sign_up.dart';
+import '../view/start/auth/update_password/update_password.dart';
 import '../view/start/onboarding/onboarding.dart';
 import '../view/start/splash/splash_view.dart';
 import '../view/start/splash/splash_vm.dart';
@@ -67,6 +75,10 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       SuccessPassModel successData = settings.arguments as SuccessPassModel;
       builder = (context) => SuccessScreen(model: successData);
       break;
+
+    case PoliciesPage.routeName:
+      builder = (context) => PoliciesPage();
+      break;
     //
     case ForgotPassword.routeName:
       builder =
@@ -85,7 +97,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case ChangePassword.routeName:
       builder =
           (context) => ChangeNotifierProvider(
-        create: (context) => ChangePasswordVM(),
+        create: (context) => UpdatePasswordVm(),
         child: const ChangePassword(),
       );
       break;
@@ -101,6 +113,34 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           (context) => ChangeNotifierProvider(
         create: (context) => ProfileVm(),
         child: const ProfileScreen(),
+      );
+      break;
+      case ProfileSettings.routeName:
+      builder =
+          (context) => ChangeNotifierProvider(
+        create: (context) => ProfileSettingsVm(),
+        child: const ProfileSettings(),
+      );
+      break;
+      case UpdatePassword.routeName:
+      builder =
+          (context) => ChangeNotifierProvider(
+        create: (context) => UpdatePasswordVm(),
+        child: const UpdatePassword(),
+      );
+      break;
+      case WaitingRoom.routeName:
+      builder =
+          (context) => ChangeNotifierProvider(
+        create: (context) => WaitingRoomVm(),
+        child: const WaitingRoom(),
+      );
+      break;
+    case GameRoom.routeName:
+      builder =
+          (context) => ChangeNotifierProvider(
+        create: (context) => GameRoomVm(),
+        child: const GameRoom(),
       );
       break;
     default:

@@ -1,6 +1,10 @@
 import 'package:aseedak/data/utils/app_colors.dart';
 import 'package:aseedak/data/utils/string_helpers.dart';
+import 'package:aseedak/view/home/profile/policies/policies_page.dart';
+import 'package:aseedak/view/home/profile/profile_settings/profile_settings.dart';
 import 'package:aseedak/view/home/profile/profile_vm.dart';
+import 'package:aseedak/view/start/auth/change_password/change_password.dart';
+import 'package:aseedak/view/start/auth/change_password/change_password_vm.dart';
 import 'package:aseedak/widgets/customCirle.dart';
 import 'package:aseedak/widgets/customText.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +13,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 import '../../../widgets/thick_text.dart';
+import '../../start/auth/update_password/update_password.dart';
 
 class ProfileScreen extends StatelessWidget {
   static const String routeName = '/profile';
@@ -63,30 +68,32 @@ class ProfileScreen extends StatelessWidget {
               buildListTile(
                 "banda",
                 "Profile", () {
-                  // Navigator.pushNamed(context, ProfileDetailsScreen.routeName);
+                  Navigator.pushNamed(context, ProfileSettings.routeName);
                 },
               ),
               buildListTile(
                 "taala",
                 "Change Password", () {
-                  // Navigator.pushNamed(context, SettingsScreen.routeName);
+                  Navigator.pushNamed(context, UpdatePassword.routeName);
                 },
               ),
               buildListTile(
                 "kaghaz",
                 "Terms & Policies", () {
-                  // vm.logout(context);
+                Navigator.pushNamed(context, PoliciesPage.routeName);
                 },
               ),
               buildListTile(
                 "tokri",
                 "Delete Account", () {
+                  vm.showDeleteAccountSheet(context);
                   // vm.logout(context);
                 },
               ),
               buildListTile(
                 "bahr",
                 "Logout", () {
+                  vm.showLogoutSheet(context);
                 },
               ),
             ],

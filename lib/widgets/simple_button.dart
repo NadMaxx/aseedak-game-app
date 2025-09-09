@@ -9,6 +9,7 @@ class SimpleSlantedButton extends StatelessWidget {
   final double cut;
   final bool leanLeft;
   final double fontSize;
+  final Color? color;
   const SimpleSlantedButton({
     super.key,
     required this.text,
@@ -17,6 +18,7 @@ class SimpleSlantedButton extends StatelessWidget {
     this.cut = 13,
     this.leanLeft = true,
     this.fontSize = 22,
+    this.color,
   });
 
   @override
@@ -51,8 +53,8 @@ class SimpleSlantedButton extends StatelessWidget {
                     leanLeft: leanLeft,
                   ),
                   child: Container(
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF7A9BC4), // Lighter shade of #537DAC
+                    decoration:  BoxDecoration(
+                      color:  Color(0xFF7A9BC4), // Lighter shade of #537DAC
                     ),
                   ),
                 ),
@@ -70,8 +72,8 @@ class SimpleSlantedButton extends StatelessWidget {
                     child: Container(
                       height: height,
                       width: topWidth,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF537DAC), // Main color
+                      decoration:  BoxDecoration(
+                        color: color ??  Color(0xFF537DAC), // Main color
                       ),
                       child: Center(
                           child: ThickShadowText(

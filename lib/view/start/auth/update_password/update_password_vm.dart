@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 
 import '../../../../data/base_vm.dart';
 
-class UpdatePasswordVm  extends BaseVm{
+class ChangePasswordVM  extends BaseVm{
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
 

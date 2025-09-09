@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 class AppColors {
   static const Color secondary = Color(0xff324B67);
+  static const Color container = Color(0xff537DAC);
   static const Color primary = Color(0xff0F1923);
   static const Color bg = Color(0xffF0F7FF);
   static const Color button = Color(0xff537DAC);

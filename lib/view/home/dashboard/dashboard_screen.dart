@@ -16,7 +16,7 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<DashboardVm>(builder: (context, value, child) {
+    return Consumer<DashboardVm>(builder: (context, vm, child) {
       return Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -68,7 +68,9 @@ class DashboardScreen extends StatelessWidget {
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(height: 24.h,),
-                        SlantedButtonStack(text: "Create Room", onPressed: (){}),
+                        SlantedButtonStack(text: "Create Room", onPressed: (){
+                          vm.showCreateRoomSheet();
+                        }),
                         SizedBox(height: 16.h,),
                         SlantedButtonStack(text: "Join Room", onPressed: (){}),
                         SizedBox(height: 16.h,),
