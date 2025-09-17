@@ -14,7 +14,9 @@ dependencies:
   chucker_flutter:
   flutter_screenutil:
   pinput:
-
+  easy_localization: ^3.0.3
+  flutter_localizations:
+    sdk: flutter
   cached_network_image:
   flutter_svg:
   badges:
@@ -44,6 +46,7 @@ flutter:
     - assets/svgs/
     - assets/pngs/
     - assets/pngs/fields/
+    - assets/lang/
 #    - assets/animations/
 
 

@@ -1,5 +1,9 @@
+import 'dart:developer';
+
 import 'package:aseedak/data/utils/app_colors.dart';
+import 'package:aseedak/helpers/my_shared_pref.dart';
 import 'package:aseedak/view/start/splash/splash_view.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,23 +16,32 @@ import 'di_container.dart' as di;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
 GlobalKey<ScaffoldMessengerState>();
+final prefsGlobal = AppPreferences();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Load saved language from SharedPreferences
   final prefs = await SharedPreferences.getInstance();
-  final langCode = prefs.getString('language_code') ?? 'en';
+  final langCode = prefs.getString('language_code') ?? 'ar';
   final startLocale = Locale(langCode);
-
+  log("saved locale: $startLocale");
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
   await di.init();
   await GetIt.I.allReady();
-
-  runApp(const MyApp());
+  AppPreferences.init();
+  runApp( EasyLocalization(
+    supportedLocales: const [ Locale('en', 'US'), // maps to en.json
+    Locale('ar', 'SA'), ],
+    path: 'assets/lang',
+    fallbackLocale: const Locale('ar'),
+    startLocale: startLocale,
+    child: const MyApp(),
+  ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -53,6 +66,8 @@ class MyApp extends StatelessWidget {
             data: mediaQuery.copyWith(textScaler: const TextScaler.linear(1)),
             child: MaterialApp(
               navigatorKey: navigatorKey,
+              localizationsDelegates: context.localizationDelegates,
+
               theme: ThemeData(
                   scaffoldBackgroundColor: AppColors.primary,
                   appBarTheme: AppBarTheme(

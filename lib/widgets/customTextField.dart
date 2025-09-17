@@ -1,4 +1,7 @@
+import 'dart:ui' as ui;
+
 import 'package:aseedak/data/utils/string_helpers.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -59,77 +62,83 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: widget.controller,
-      validator: widget.validator,
-      keyboardType: widget.keyboardType ?? TextInputType.text,
-      maxLines: _obscure ? 1 : widget.maxLines,
-      obscureText: _obscure,
-      readOnly: widget.readOnly,
-      onChanged: widget.onChanged,
-      onTap: widget.onTap,
-      style: TextStyle(
-        color: widget.textColor ?? AppColors.white,
-        fontSize: widget.fontSize ?? 16.sp,
-        fontWeight: FontWeight.bold,
-        fontFamily: "Kanit"
-      ),
-      decoration: InputDecoration(
-        hintText: widget.hintText,
-        hintStyle: TextStyle(
-          color: AppColors.white,
-          fontSize: 16.sp,
-            fontWeight: FontWeight.bold,
-            fontFamily: "Kanit"
+    return Directionality(
+      textDirection: context.locale.languageCode == 'ar'
+          ? ui.TextDirection.rtl
+          : ui.TextDirection.ltr,
+      child: TextFormField(
+        controller: widget.controller,
+        validator: widget.validator,
+        keyboardType: widget.keyboardType ?? TextInputType.text,
+        maxLines: _obscure ? 1 : widget.maxLines,
+        obscureText: _obscure,
+        readOnly: widget.readOnly,
+        onChanged: widget.onChanged,
+        onTap: widget.onTap,
+        // textDirection:  ui.TextDirection.ltr,
+        style: TextStyle(
+          color: widget.textColor ?? AppColors.white,
+          fontSize: widget.fontSize ?? 16.sp,
+          fontWeight: FontWeight.bold,
+          fontFamily: "Kanit"
+        ),
+        decoration: InputDecoration(
+          hintText: widget.hintText,
+          hintStyle: TextStyle(
+            color: AppColors.white,
+            fontSize: 16.sp,
+              fontWeight: FontWeight.bold,
+              fontFamily: "Kanit"
 
-        ),
-        prefixIcon: widget.prefix == null
-            ? null
-            : Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12.w),
-          child: Image.asset(
-            widget.prefix!.toTextField,
-            height: 20.h,
-            width: 20.w,
-            fit: BoxFit.scaleDown,
           ),
-        ),
-        prefixIconConstraints: BoxConstraints(
-          minHeight: 40.h,
-          minWidth: 40.w,
-        ),
-        suffixIcon: widget.obscureText
-            ? IconButton(
-          icon: Icon(
-            !_obscure ? Icons.visibility_off : Icons.visibility,
-            color: Colors.grey,
-            size: 20.sp,
+          prefixIcon: widget.prefix == null
+              ? null
+              : Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12.w),
+            child: Image.asset(
+              widget.prefix!.toTextField,
+              height: 20.h,
+              width: 20.w,
+              fit: BoxFit.scaleDown,
+            ),
           ),
-          onPressed: _toggleObscure,
-        )
-            : widget.suffixIcon,
-        filled: true,
-        fillColor: Color(0xff324B67),
-        contentPadding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 20.w),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.r),
-          borderSide: BorderSide(
-            color: Color(0xffE6E6E6),
-            width: 1.w,
+          prefixIconConstraints: BoxConstraints(
+            minHeight: 40.h,
+            minWidth: 40.w,
           ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.r),
-          borderSide: BorderSide(
-            color: Color(0xffE6E6E6),
-            width: 1.w,
+          suffixIcon: widget.obscureText
+              ? IconButton(
+            icon: Icon(
+              !_obscure ? Icons.visibility_off : Icons.visibility,
+              color: Colors.grey,
+              size: 20.sp,
+            ),
+            onPressed: _toggleObscure,
+          )
+              : widget.suffixIcon,
+          filled: true,
+          fillColor: Color(0xff324B67),
+          contentPadding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 20.w),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.r),
+            borderSide: BorderSide(
+              color: Color(0xffE6E6E6),
+              width: 1.w,
+            ),
           ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.r),
-          borderSide: BorderSide(
-            color: Color(0xffE6E6E6),
-            width: 1.5.w,
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.r),
+            borderSide: BorderSide(
+              color: Color(0xffE6E6E6),
+              width: 1.w,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.r),
+            borderSide: BorderSide(
+              color: Color(0xffE6E6E6),
+              width: 1.5.w,
+            ),
           ),
         ),
       ),

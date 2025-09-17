@@ -2,7 +2,7 @@
 
 class ApiEndPoints{
   ApiEndPoints._();
-  static const String baseUrl = "https://app.thebuilderslodge.org/api/";
+  static const String baseUrl = "https://c-reviews.vercel.app/api/mobile/";
   static const String socket = "wss://app.thebuilderslodge.org";
 
 

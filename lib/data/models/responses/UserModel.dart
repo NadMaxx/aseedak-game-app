@@ -3,43 +3,31 @@ UserModel userModelFromJson(String str) => UserModel.fromJson(json.decode(str));
 String userModelToJson(UserModel data) => json.encode(data.toJson());
 class UserModel {
   UserModel({
-      bool? success, 
       String? message, 
-      String? accessToken, 
-      String? refreshToken, 
+      String? token, 
       User? user,}){
-    _success = success;
     _message = message;
-    _accessToken = accessToken;
-    _refreshToken = refreshToken;
+    _token = token;
     _user = user;
 }
 
   UserModel.fromJson(dynamic json) {
-    _success = json['success'];
     _message = json['message'];
-    _accessToken = json['accessToken'];
-    _refreshToken = json['refreshToken'];
+    _token = json['token'];
     _user = json['user'] != null ? User.fromJson(json['user']) : null;
   }
-  bool? _success;
   String? _message;
-  String? _accessToken;
-  String? _refreshToken;
+  String? _token;
   User? _user;
 
-  bool? get success => _success;
   String? get message => _message;
-  String? get accessToken => _accessToken;
-  String? get refreshToken => _refreshToken;
+  String? get token => _token;
   User? get user => _user;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['success'] = _success;
     map['message'] = _message;
-    map['accessToken'] = _accessToken;
-    map['refreshToken'] = _refreshToken;
+    map['token'] = _token;
     if (_user != null) {
       map['user'] = _user?.toJson();
     }
@@ -56,32 +44,26 @@ class User {
       String? email, 
       String? firstName, 
       String? lastName, 
-      String? phone, 
+      String? username, 
+      String? avatar, 
       String? role, 
-      String? status, 
-      String? membershipNumber, 
-      String? profileImage, 
-      String? profileImagePublicId, 
-      String? joinDate, 
-      dynamic paidDate, 
-      String? lastLogin, 
-      String? createdAt, 
-      String? updatedAt,}){
+      bool? isActive, 
+      bool? emailVerified, 
+      int? gamesPlayed, 
+      int? gamesWon, 
+      int? totalKills,}){
     _id = id;
     _email = email;
     _firstName = firstName;
     _lastName = lastName;
-    _phone = phone;
+    _username = username;
+    _avatar = avatar;
     _role = role;
-    _status = status;
-    _membershipNumber = membershipNumber;
-    _profileImage = profileImage;
-    _profileImagePublicId = profileImagePublicId;
-    _joinDate = joinDate;
-    _paidDate = paidDate;
-    _lastLogin = lastLogin;
-    _createdAt = createdAt;
-    _updatedAt = updatedAt;
+    _isActive = isActive;
+    _emailVerified = emailVerified;
+    _gamesPlayed = gamesPlayed;
+    _gamesWon = gamesWon;
+    _totalKills = totalKills;
 }
 
   User.fromJson(dynamic json) {
@@ -89,49 +71,40 @@ class User {
     _email = json['email'];
     _firstName = json['firstName'];
     _lastName = json['lastName'];
-    _phone = json['phone'];
+    _username = json['username'];
+    _avatar = json['avatar'];
     _role = json['role'];
-    _status = json['status'];
-    _membershipNumber = json['membershipNumber'];
-    _profileImage = json['profileImage'];
-    _profileImagePublicId = json['profileImagePublicId'];
-    _joinDate = json['joinDate'];
-    _paidDate = json['paidDate'];
-    _lastLogin = json['lastLogin'];
-    _createdAt = json['createdAt'];
-    _updatedAt = json['updatedAt'];
+    _isActive = json['isActive'];
+    _emailVerified = json['emailVerified'];
+    _gamesPlayed = json['gamesPlayed'];
+    _gamesWon = json['gamesWon'];
+    _totalKills = json['totalKills'];
   }
   String? _id;
   String? _email;
   String? _firstName;
   String? _lastName;
-  String? _phone;
+  String? _username;
+  String? _avatar;
   String? _role;
-  String? _status;
-  String? _membershipNumber;
-  String? _profileImage;
-  String? _profileImagePublicId;
-  String? _joinDate;
-  dynamic _paidDate;
-  String? _lastLogin;
-  String? _createdAt;
-  String? _updatedAt;
+  bool? _isActive;
+  bool? _emailVerified;
+  int? _gamesPlayed;
+  int? _gamesWon;
+  int? _totalKills;
 
   String? get id => _id;
   String? get email => _email;
   String? get firstName => _firstName;
   String? get lastName => _lastName;
-  String? get phone => _phone;
+  String? get username => _username;
+  String? get avatar => _avatar;
   String? get role => _role;
-  String? get status => _status;
-  String? get membershipNumber => _membershipNumber;
-  String? get profileImage => _profileImage;
-  String? get profileImagePublicId => _profileImagePublicId;
-  String? get joinDate => _joinDate;
-  dynamic get paidDate => _paidDate;
-  String? get lastLogin => _lastLogin;
-  String? get createdAt => _createdAt;
-  String? get updatedAt => _updatedAt;
+  bool? get isActive => _isActive;
+  bool? get emailVerified => _emailVerified;
+  int? get gamesPlayed => _gamesPlayed;
+  int? get gamesWon => _gamesWon;
+  int? get totalKills => _totalKills;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -139,17 +112,14 @@ class User {
     map['email'] = _email;
     map['firstName'] = _firstName;
     map['lastName'] = _lastName;
-    map['phone'] = _phone;
+    map['username'] = _username;
+    map['avatar'] = _avatar;
     map['role'] = _role;
-    map['status'] = _status;
-    map['membershipNumber'] = _membershipNumber;
-    map['profileImage'] = _profileImage;
-    map['profileImagePublicId'] = _profileImagePublicId;
-    map['joinDate'] = _joinDate;
-    map['paidDate'] = _paidDate;
-    map['lastLogin'] = _lastLogin;
-    map['createdAt'] = _createdAt;
-    map['updatedAt'] = _updatedAt;
+    map['isActive'] = _isActive;
+    map['emailVerified'] = _emailVerified;
+    map['gamesPlayed'] = _gamesPlayed;
+    map['gamesWon'] = _gamesWon;
+    map['totalKills'] = _totalKills;
     return map;
   }
 

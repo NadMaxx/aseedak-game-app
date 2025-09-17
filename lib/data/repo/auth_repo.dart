@@ -7,6 +7,8 @@ import '../models/responses/UserModel.dart';
 import '../models/responses/my_api_response.dart';
 import '../remote/dio/dio_client.dart';
 import '../remote/exception/api_error_handler.dart';
+import '../utils/api_end_points.dart';
+import '../utils/sharedKeys.dart';
 
 
 class AuthRepo {
@@ -19,37 +21,37 @@ class AuthRepo {
     dioClient.updateToken();
   }
 
-  // Future<void> setUserObject(UserModel userJson) async {
-  //   try {
-  //     await sharedPreferences.setString(
-  //         SharedPrefsKeys.LOGGED_IN_USER_OBJECT, userModelToJson(userJson));
-  //   } catch (e) {
-  //     log("Error saving user object: $e");
-  //   }
-  //   _updateToken();
-  // }
-  //
-  // UserModel? getUserObject() {
-  //   if (sharedPreferences.containsKey(SharedPrefsKeys.LOGGED_IN_USER_OBJECT)) {
-  //     return UserModel.fromJson(jsonDecode(
-  //         sharedPreferences.getString(SharedPrefsKeys.LOGGED_IN_USER_OBJECT) ??
-  //             ""));
-  //   } else {
-  //     return null;
-  //   }
-  // }
-  //
-  // Future setUserLoggedIn(UserModel userJson) async {
-  //   await sharedPreferences.setBool(SharedPrefsKeys.IS_USER_LOGGED_IN, true);
-  //   await sharedPreferences.setString("token", userJson.accessToken ?? "");
-  //   dioClient.updateHeader(userJson.accessToken);
-  //   await setUserObject(userJson);
-  // }
-  //
-  // bool isUserLoggedIn() {
-  //   return sharedPreferences.getBool(SharedPrefsKeys.IS_USER_LOGGED_IN) ??
-  //       false;
-  // }
+  Future<void> setUserObject(UserModel userJson) async {
+    try {
+      await sharedPreferences.setString(
+          SharedPrefsKeys.LOGGED_IN_USER_OBJECT, userModelToJson(userJson));
+    } catch (e) {
+      log("Error saving user object: $e");
+    }
+    _updateToken();
+  }
+
+  UserModel? getUserObject() {
+    if (sharedPreferences.containsKey(SharedPrefsKeys.LOGGED_IN_USER_OBJECT)) {
+      return UserModel.fromJson(jsonDecode(
+          sharedPreferences.getString(SharedPrefsKeys.LOGGED_IN_USER_OBJECT) ??
+              ""));
+    } else {
+      return null;
+    }
+  }
+
+  Future setUserLoggedIn(UserModel userJson) async {
+    await sharedPreferences.setBool(SharedPrefsKeys.IS_USER_LOGGED_IN, true);
+    await sharedPreferences.setString("token", userJson.token ?? "");
+    dioClient.updateHeader(userJson.token);
+    await setUserObject(userJson);
+  }
+
+  bool isUserLoggedIn() {
+    return sharedPreferences.getBool(SharedPrefsKeys.IS_USER_LOGGED_IN) ??
+        false;
+  }
   //
   // Future<bool> clearSharedData() async {
   //   await sharedPreferences.remove(SharedPrefsKeys.IS_USER_LOGGED_IN);
@@ -61,20 +63,20 @@ class AuthRepo {
   // }
   //
   //
-  // Future<ApiResponse> login({required String email,required String password}) async {
-  //   try {
-  //     Response response = await dioClient.post(
-  //       ApiEndPoints.login,
-  //       data:  {
-  //         "email": email,
-  //         "password": password,
-  //       }
-  //     );
-  //     return ApiResponse.withSuccess(response);
-  //   } catch (e) {
-  //     return ApiResponse.withError(ApiErrorHandler.getMessage(e));
-  //   }
-  // }
+  Future<ApiResponse> login({required String email,required String password}) async {
+    try {
+      Response response = await dioClient.post(
+        ApiEndPoints.login,
+        data:  {
+          "email": email,
+          "password": password,
+        }
+      );
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
   // Future<ApiResponse> logout() async {
   //   try {
   //     Response response = await dioClient.post(

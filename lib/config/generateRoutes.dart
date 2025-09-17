@@ -153,7 +153,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       return SlideTransition(
         position: Tween<Offset>(
-          begin: const Offset(1.0, 0.0),
+          begin: const Offset(-1.0, 0.0), // 👈 starts from LEFT
           end: Offset.zero,
         ).animate(CurvedAnimation(parent: animation, curve: Curves.easeInOut)),
         child: child,

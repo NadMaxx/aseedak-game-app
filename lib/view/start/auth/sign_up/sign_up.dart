@@ -5,9 +5,9 @@ import 'package:aseedak/view/start/auth/sign_up/sign_up_vm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../../data/utils/app_colors.dart';
-import '../../../../data/utils/app_constants.dart';
 import '../../../../widgets/blurred.dart';
 import '../../../../widgets/customText.dart';
 import '../../../../widgets/customTextField.dart';
@@ -23,7 +23,7 @@ class SignUpView extends StatelessWidget {
     return Consumer<SignUpVm>(
       builder: (context, vm, child) {
         return Scaffold(
-          resizeToAvoidBottomInset: true, // ✅ allow screen to adjust on keyboard
+          resizeToAvoidBottomInset: true,
           body: Stack(
             children: [
               // 🔹 Background
@@ -71,7 +71,7 @@ class SignUpView extends StatelessWidget {
                       ),
                       SizedBox(height: 50.h),
                       ThickShadowText(
-                        text: "REGISTER",
+                        text: "register2".tr().toUpperCase(),
                         fontSize: 56.h,
                         fontWeight: FontWeight.w600,
                         shadowThickness: 4,
@@ -86,11 +86,11 @@ class SignUpView extends StatelessWidget {
                             CustomTextField(
                               controller: vm.nameController,
                               prefix: "person",
-                              hintText: "Full Name",
+                              hintText: "full_name".tr(),
                               keyboardType: TextInputType.name,
                               validator: (v) {
                                 if (v == null || v.isEmpty) {
-                                  return "Name is required";
+                                  return "name_required".tr();
                                 }
                                 return null;
                               },
@@ -99,45 +99,45 @@ class SignUpView extends StatelessWidget {
                             CustomTextField(
                               controller: vm.emailController,
                               prefix: "mail",
-                              hintText: "Email",
+                              hintText: "email".tr(),
                               keyboardType: TextInputType.emailAddress,
                               validator: (v) {
                                 if (v == null || v.isEmpty) {
-                                  return "Email is required";
+                                  return "email_required".tr();
                                 }
                                 if (!RegExp(
                                   r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+$",
                                 ).hasMatch(v)) {
-                                  return "Enter a valid email";
+                                  return "email_invalid".tr();
                                 }
                                 return null;
                               },
                             ),
                             SizedBox(height: 24.h),
                             CustomTextField(
-                              controller: vm.phoneController, // ✅ better: separate controller
+                              controller: vm.phoneController,
                               prefix: "phone",
-                              hintText: "Phone Number",
+                              hintText: "phone".tr(),
                               keyboardType: TextInputType.phone,
                               validator: (v) {
                                 if (v == null || v.isEmpty) {
-                                  return "Phone number is required";
+                                  return "phone_required".tr();
                                 }
                                 if (!RegExp(r'^\+?[0-9]{7,15}$').hasMatch(v)) {
-                                  return "Enter a valid phone number";
+                                  return "phone_invalid".tr();
                                 }
                                 return null;
                               },
                             ),
                             SizedBox(height: 24.h),
                             CustomTextField(
-                              controller: vm.passwordController, // ✅ separate controller
+                              controller: vm.passwordController,
                               prefix: "lock",
-                              hintText: "Password",
+                              hintText: "password".tr(),
                               obscureText: true,
                               validator: (v) {
                                 if (v == null || v.isEmpty) {
-                                  return "Password is required";
+                                  return "password_required".tr();
                                 }
                                 return null;
                               },
@@ -149,9 +149,10 @@ class SignUpView extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: SlantedButtonStack(
-                                    text: 'REGISTER',
+                                    text: 'register2'.tr().toUpperCase(),
                                     onPressed: () {
-                                      if (vm.formKey.currentState?.validate() ?? false) {
+                                      if (vm.formKey.currentState?.validate() ??
+                                          false) {
                                         // TODO: handle sign-up
                                       }
                                     },
@@ -169,27 +170,28 @@ class SignUpView extends StatelessWidget {
                       InkWell(
                         onTap: () {
                           log("Navigate to Login");
-                          Navigator.pushReplacementNamed(context, LoginView.routeName);
+                          Navigator.pushReplacementNamed(
+                              context, LoginView.routeName);
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             CustomText(
-                              text: "Already have an account? ",
+                              text: "login".tr(),
+                              fontFamily: "Kanit",
+
+                              fontSize: 16.sp,
+                              color: AppColors.red,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            CustomText(
+                              text: "already_have_account".tr(),
                               fontFamily: "Kanit",
                               fontSize: 16.sp,
                               color: AppColors.white,
                               fontWeight: FontWeight.w300,
                             ),
-                            CustomText(
-                              text: "Login",
-                              fontFamily: "Kanit",
-                              decoration: TextDecoration.underline,
-                              decorationColor: AppColors.red,
-                              fontSize: 16.sp,
-                              color: AppColors.red,
-                              fontWeight: FontWeight.w300,
-                            ),
+
                           ],
                         ),
                       ),

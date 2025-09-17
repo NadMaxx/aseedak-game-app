@@ -1,24 +1,20 @@
 import 'dart:ui';
 
-import 'package:aseedak/data/models/passModels/SuccessPassModel.dart';
 import 'package:aseedak/data/utils/app_colors.dart';
-import 'package:aseedak/data/utils/app_constants.dart';
 import 'package:aseedak/data/utils/string_helpers.dart';
 import 'package:aseedak/view/home/dashboard/dashboard_screen.dart';
 import 'package:aseedak/view/start/auth/sign_up/sign_up.dart';
-import 'package:aseedak/view/success_screen/success_screen.dart';
+import 'package:aseedak/view/start/auth/forgot_password/forgot_password.dart';
 import 'package:aseedak/widgets/customText.dart';
 import 'package:aseedak/widgets/customTextField.dart';
 import 'package:aseedak/widgets/custom_button.dart';
 import 'package:aseedak/widgets/thick_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../../widgets/blurred.dart';
-import '../forgot_password/forgot_password.dart';
-import '../forgot_password/forgot_password.dart';
 import 'login_vm.dart';
 
 class LoginView extends StatelessWidget {
@@ -77,8 +73,8 @@ class LoginView extends StatelessWidget {
                     ),
                     SizedBox(height: 60.h),
                     ThickShadowText(
-                      text: "LOGIN",
-                      fontSize: 56.h,
+                      text: "login".tr().toUpperCase(),
+                      fontSize: 40.h,
                       fontWeight: FontWeight.w600,
                       shadowThickness: 4,
                     ),
@@ -92,16 +88,16 @@ class LoginView extends StatelessWidget {
                           CustomTextField(
                             controller: vm.emailController,
                             prefix: "mail",
-                            hintText: "Email",
+                            hintText: "email".tr(),
                             keyboardType: TextInputType.emailAddress,
                             validator: (v) {
                               if (v == null || v.isEmpty) {
-                                return "Email is required";
+                                return "email_required".tr();
                               }
                               if (!RegExp(
                                 r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+$",
                               ).hasMatch(v)) {
-                                return "Enter a valid email";
+                                return "email_invalid".tr();
                               }
                               return null;
                             },
@@ -110,17 +106,23 @@ class LoginView extends StatelessWidget {
                           CustomTextField(
                             controller: vm.passwordController,
                             prefix: "lock",
-                            hintText: "Password",
+                            hintText: "password".tr(),
                             obscureText: true,
                             validator: (v) {
                               if (v == null || v.isEmpty) {
-                                return "Password is required";
+                                return "password_required".tr();
                               }
                               return null;
                             },
                           ),
                           SizedBox(height: 24.h),
-
+                          vm.isLoading ?
+                          Center(
+                            child: CircularProgressIndicator(
+                              color: AppColors.red,
+                            ),
+                          )
+                          :
                           GestureDetector(
                             onTap: () {
                               Navigator.pushNamed(
@@ -129,31 +131,34 @@ class LoginView extends StatelessWidget {
                             child: Row(
                               children: [
                                 CustomText(
-                                  text: "Forgot Password? ",
-                                  fontFamily: "Kanit",
-                                  fontSize: 16.sp,
-                                  color: AppColors.white,
-                                  fontWeight: FontWeight.w300,
-                                ),
-                                CustomText(
-                                  text: "Recover",
+                                  text: "recover".tr(),
                                   fontFamily: "Kanit",
                                   decoration: TextDecoration.underline,
                                   decorationColor: AppColors.red,
                                   fontSize: 16.sp,
                                   color: AppColors.red,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                CustomText(
+                                  text: "forgot_password".tr(),
+                                  fontFamily: "Kanit",
+                                  fontSize: 16.sp,
+                                  color: AppColors.white,
                                   fontWeight: FontWeight.w300,
                                 ),
+
                                 SizedBox(width: 10.w),
+
                                 Expanded(
                                   child: SlantedButtonStack(
-                                    text: 'LOGIN',
+                                    fontSize: 16.sp,
+                                    text: 'login'.tr().toUpperCase(),
                                     onPressed: () {
-                                      Navigator.pushNamed(context, DashboardScreen.routeName);
+
 
                                       if (vm.formKey.currentState?.validate() ??
                                           false) {
-                                        // TODO: handle login
+                                         vm.loginRequest();
                                       }
                                     },
                                   ),
@@ -185,21 +190,21 @@ class LoginView extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       CustomText(
-                        text: "Don’t have an account? ",
+                        text: "register".tr(),
+                        fontFamily: "Kanit",
+                        decorationColor: AppColors.red,
+                        fontSize: 16.sp,
+                        color: AppColors.red,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      CustomText(
+                        text: "dont_have_account".tr(),
                         fontFamily: "Kanit",
                         fontSize: 16.sp,
                         color: AppColors.white,
                         fontWeight: FontWeight.w300,
                       ),
-                      CustomText(
-                        text: "Register",
-                        fontFamily: "Kanit",
-                        decoration: TextDecoration.underline,
-                        decorationColor: AppColors.red,
-                        fontSize: 16.sp,
-                        color: AppColors.red,
-                        fontWeight: FontWeight.w300,
-                      ),
+
                     ],
                   ),
                 ),

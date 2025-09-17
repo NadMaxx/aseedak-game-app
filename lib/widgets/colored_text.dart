@@ -45,6 +45,7 @@ class ColoredText extends StatelessWidget {
       textAlign: textAlign,
       maxLines: maxLines,
       overflow: overflow,
+      textDirection: Directionality.of(context), // ✅ THIS makes it follow locale (LTR/RTL)
       text: TextSpan(
         style: defaultStyle ?? DefaultTextStyle.of(context).style,
         children: textSpans,
