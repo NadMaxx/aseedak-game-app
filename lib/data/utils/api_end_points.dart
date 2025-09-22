@@ -22,6 +22,10 @@ class ApiEndPoints{
 
   static String forgotPassword = "auth/forgot-password";
 
+  static String signUp = "auth/register";
+  static String resendOTP = "auth/resend-otp";
+  static String verifyOTP = "auth/verify-email";
+
 
 
 }

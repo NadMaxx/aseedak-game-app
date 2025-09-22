@@ -16,6 +16,12 @@
   "register2": "Register",
   "full_name": "Full Name",
   "name_required": "Name is required",
+  "enter_otp": "Enter OTP",
+  "otp_sent": "We have sent an OTP to your email. Please enter it below to verify your account.",
+  "otp_required": "OTP is required",
+  "otp_invalid": "Enter a valid OTP",
+  "verify": "Verify & Continue",
+  "resend_otp": "Resend OTP",
 
   "phone": "Phone Number",
   "phone_required": "Phone number is required",

@@ -14,8 +14,14 @@ class ApiErrorHandler {
           switch (error.type) {
             case DioExceptionType.badResponse:
               log("DioExceptionType.badResponse ${error.response?.data}");
-              errorDescription = error.response?.data['message'] ?? error.response?.data['error'];
-              log("errorDescription: $errorDescription");
+              try{
+                errorDescription = error.response?.data['message'] ?? error.response?.data['error'];
+                log("errorDescription: $errorDescription");
+              }catch(e){
+                log("DioExceptionType.badResponse error: $e");
+                errorDescription = "Something went wrong";
+              }
+
               break;
             case DioExceptionType.connectionError:
             case DioExceptionType.cancel:

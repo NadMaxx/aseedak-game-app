@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/body/RegisterBody.dart';
 import '../models/responses/UserModel.dart';
 import '../models/responses/my_api_response.dart';
 import '../remote/dio/dio_client.dart';
@@ -70,6 +71,44 @@ class AuthRepo {
         data:  {
           "email": email,
           "password": password,
+        }
+      );
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+  Future<ApiResponse> register({required RegisterBody body}) async {
+    try {
+      Response response = await dioClient.post(
+        ApiEndPoints.signUp,
+        data:  body.toJson()
+      );
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+  Future<ApiResponse> resendOTP({required String email}) async {
+    try {
+      Response response = await dioClient.post(
+        ApiEndPoints.resendOTP,
+        data:  {
+          "email": email,
+        }
+      );
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+  Future<ApiResponse> verifyOTP({required String email,required String otp}) async {
+    try {
+      Response response = await dioClient.post(
+        ApiEndPoints.verifyOTP,
+        data: {
+          "email": email,
+          "otp": otp
         }
       );
       return ApiResponse.withSuccess(response);

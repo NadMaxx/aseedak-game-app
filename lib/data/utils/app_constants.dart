@@ -1,3 +1,4 @@
+import 'package:aseedak/data/models/responses/UserModel.dart';
 import 'package:flutter/cupertino.dart';
 
 
@@ -17,5 +18,5 @@ class AppConstants {
     );
     return regex.hasMatch(email.trim());
   }
-
+  static UserModel? currentUser;
 }

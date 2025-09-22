@@ -145,6 +145,12 @@ class SignUpView extends StatelessWidget {
                             SizedBox(height: 40.h),
 
                             // 🔹 Register Button
+                            vm.isLoading ?
+                            Center(
+                              child: const CircularProgressIndicator(
+                                color: AppColors.white,
+                              ),
+                            ):
                             Row(
                               children: [
                                 Expanded(
@@ -153,7 +159,7 @@ class SignUpView extends StatelessWidget {
                                     onPressed: () {
                                       if (vm.formKey.currentState?.validate() ??
                                           false) {
-                                        // TODO: handle sign-up
+                                       vm.userSignUp();
                                       }
                                     },
                                   ),
