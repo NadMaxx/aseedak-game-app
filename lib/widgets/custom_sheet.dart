@@ -103,7 +103,6 @@ Future<void> showCustomSheet({
   );
 }
 
-
 Future<void> showCustomSheetWithContent({
   required Widget children,
   String? cancelText,
@@ -119,56 +118,68 @@ Future<void> showCustomSheetWithContent({
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
     builder: (context) {
-      return Container(
-        decoration: BoxDecoration(
-            color: AppColors.primary,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            border: Border(
-                top: BorderSide(
-                    color: Colors.white30
-                )
-            )
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(height: 20.h),
-            Container(
-              width: 40.w,
-              height: 5.h,
+      return SafeArea(
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom, // ✅ Keyboard-aware
+          ),
+          child: SingleChildScrollView( // ✅ Makes sheet scrollable
+            child: Container(
               decoration: BoxDecoration(
-                color: AppColors.white,
-                borderRadius: BorderRadius.circular(10),
+                color: AppColors.primary,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                border: const Border(
+                  top: BorderSide(color: Colors.white30),
+                ),
               ),
-            ),
-            SizedBox(height: 16.h),
-            children,
-            /// Buttons Row
-            Padding(
-              padding: EdgeInsets.all(20.w),
-              child: Row(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(
-                    child: SimpleSlantedButton(
-                      text: cancelText ?? "CANCEL",
-                      onPressed:onCancelPressed ?? () {
-                        Navigator.pop(context);
-                      },
+                  SizedBox(height: 20.h),
+                  Container(
+                    width: 40.w,
+                    height: 5.h,
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                      child: SlantedButtonStack(
-                          text: confirmText ?? "YES",
-                          onPressed: onConfirmPressed)
+                  SizedBox(height: 16.h),
+
+                  /// Your dynamic content
+                  children,
+
+                  /// Buttons Row
+                  Padding(
+                    padding: EdgeInsets.all(20.w),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: SimpleSlantedButton(
+                            text: cancelText ?? "CANCEL",
+                            onPressed: onCancelPressed ?? () {
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ),
+                        SizedBox(width: 12.w),
+                        Expanded(
+                          child: SlantedButtonStack(
+                            text: confirmText ?? "YES",
+                            onPressed: onConfirmPressed,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+                  SizedBox(height: 10.h),
                 ],
               ),
             ),
-            SizedBox(height: 10.h),
-          ],
+          ),
         ),
       );
     },
   );
 }
+

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:aseedak/data/base_vm.dart';
 import 'package:aseedak/main.dart';
+import 'package:aseedak/view/home/dashboard/dashboard_screen.dart';
 import 'package:aseedak/view/start/auth/login/login_view.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
@@ -88,6 +89,28 @@ class OTPVm extends BaseVm{
           message: "You have successfully verified your OTP. You can now log in to your account.",
           route: LoginView.routeName,
         ));
+      } else {
+        // MyErrorResponse myErrorResponse = MyErrorResponse.fromJson(apiResponse.error!);
+        customSnack(
+          text: apiResponse.error!.toString(),
+          context: navigatorKey.currentContext!,
+          isSuccess: false,
+        );
+        notifyListeners();
+      }
+    isVerifying = false;
+      notifyListeners();
+    }
+  verifyAndLogin() async {
+    isVerifying = true;
+    notifyListeners();
+      ApiResponse apiResponse = await authRepo.verifyOTP(
+        email: authRepo.getUserObject()!.user!.email ?? "",
+        otp: otpController.text // Replace with actual OTP input
+      );
+      if (apiResponse.response != null &&
+          (apiResponse.response?.statusCode == 200  || apiResponse.response?.statusCode == 201)) {
+        Navigator.pushNamed( navigatorKey.currentContext!, DashboardScreen.routeName);
       } else {
         // MyErrorResponse myErrorResponse = MyErrorResponse.fromJson(apiResponse.error!);
         customSnack(

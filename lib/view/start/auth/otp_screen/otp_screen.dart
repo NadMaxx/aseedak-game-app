@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:ui' as ui;
 
 import 'package:aseedak/data/utils/app_colors.dart';
@@ -15,6 +16,7 @@ import 'package:provider/provider.dart';
 import '../../../../data/models/passModels/SuccessPassModel.dart';
 import '../../../../widgets/customText.dart';
 import '../../../../widgets/custom_button.dart';
+import '../../../../widgets/custom_snack.dart';
 import '../../../success_screen/success_screen.dart';
 
 class OtpScreen extends StatelessWidget {
@@ -86,6 +88,20 @@ class OtpScreen extends StatelessWidget {
                   SlantedButtonStack(
                     text: "verify".tr(), // 🔹 from localization
                     onPressed: () {
+                      if(vm.otpController.text.length < 4) {
+                        customSnack(
+                          text: "Please enter valid OTP".tr(),
+                          context: context,
+                          isSuccess: false,
+                        );
+                        return;
+                      }
+                      log("Current User: ${vm.authRepo.getUserObject() != null}");
+                      // return;
+                      if(vm.authRepo.getUserObject() != null ) {
+                        vm.verifyAndLogin();
+                        return;
+                    }
                       if(AppConstants.currentUser != null){
                         vm.verify();
                       } else {

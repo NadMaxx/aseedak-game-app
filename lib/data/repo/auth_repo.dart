@@ -54,14 +54,14 @@ class AuthRepo {
         false;
   }
   //
-  // Future<bool> clearSharedData() async {
-  //   await sharedPreferences.remove(SharedPrefsKeys.IS_USER_LOGGED_IN);
-  //   await sharedPreferences.remove(SharedPrefsKeys.LOGGED_IN_USER_OBJECT);
-  //   await sharedPreferences.remove("token");
-  //   _updateToken();
-  //   // FirebaseMessaging.instance.unsubscribeFromTopic(AppConstants.TOPIC);
-  //   return true;
-  // }
+  Future<bool> clearSharedData() async {
+    await sharedPreferences.remove(SharedPrefsKeys.IS_USER_LOGGED_IN);
+    await sharedPreferences.remove(SharedPrefsKeys.LOGGED_IN_USER_OBJECT);
+    await sharedPreferences.remove("token");
+    _updateToken();
+    // FirebaseMessaging.instance.unsubscribeFromTopic(AppConstants.TOPIC);
+    return true;
+  }
   //
   //
   Future<ApiResponse> login({required String email,required String password}) async {
@@ -116,29 +116,29 @@ class AuthRepo {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
     }
   }
-  // Future<ApiResponse> logout() async {
-  //   try {
-  //     Response response = await dioClient.post(
-  //       ApiEndPoints.logout,
-  //     );
-  //     return ApiResponse.withSuccess(response);
-  //   } catch (e) {
-  //     return ApiResponse.withError(ApiErrorHandler.getMessage(e));
-  //   }
-  // }
+  Future<ApiResponse> logout() async {
+    try {
+      Response response = await dioClient.post(
+        ApiEndPoints.logout,
+      );
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
   //
-  // forgotPassword({required String email}) {
-  //   return dioClient.post(
-  //     ApiEndPoints.forgotPassword,
-  //     data: {
-  //       "email": email,
-  //     },
-  //   ).then((response) {
-  //     return ApiResponse.withSuccess(response);
-  //   }).catchError((error) {
-  //     return ApiResponse.withError(ApiErrorHandler.getMessage(error));
-  //   });
-  // }
+  forgotPassword({required String email}) {
+    return dioClient.post(
+      ApiEndPoints.forgotPassword,
+      data: {
+        "email": email,
+      },
+    ).then((response) {
+      return ApiResponse.withSuccess(response);
+    }).catchError((error) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(error));
+    });
+  }
 
 
 }
