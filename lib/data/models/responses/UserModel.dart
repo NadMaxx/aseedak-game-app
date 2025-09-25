@@ -45,7 +45,8 @@ class User {
       String? firstName, 
       String? lastName, 
       String? username, 
-      String? avatar, 
+      String? phoneNumber,
+      String? avatar,
       String? role, 
       bool? isActive, 
       bool? emailVerified, 
@@ -56,6 +57,7 @@ class User {
     _email = email;
     _firstName = firstName;
     _lastName = lastName;
+    _phoneNumber = phoneNumber;
     _username = username;
     _avatar = avatar;
     _role = role;
@@ -75,6 +77,7 @@ class User {
     _avatar = json['avatar'];
     _role = json['role'];
     _isActive = json['isActive'];
+    _phoneNumber = json['phoneNumber'];
     _emailVerified = json['emailVerified'];
     _gamesPlayed = json['gamesPlayed'];
     _gamesWon = json['gamesWon'];
@@ -82,6 +85,7 @@ class User {
   }
   String? _id;
   String? _email;
+  String? _phoneNumber;
   String? _firstName;
   String? _lastName;
   String? _username;
@@ -100,6 +104,7 @@ class User {
   String? get username => _username;
   String? get avatar => _avatar;
   String? get role => _role;
+  String? get phoneNumber => _phoneNumber;
   bool? get isActive => _isActive;
   bool? get emailVerified => _emailVerified;
   int? get gamesPlayed => _gamesPlayed;
@@ -110,6 +115,7 @@ class User {
     final map = <String, dynamic>{};
     map['id'] = _id;
     map['email'] = _email;
+    map['phoneNumber'] = _phoneNumber;
     map['firstName'] = _firstName;
     map['lastName'] = _lastName;
     map['username'] = _username;

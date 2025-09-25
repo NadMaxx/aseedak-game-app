@@ -1,4 +1,5 @@
 import 'package:aseedak/data/base_vm.dart';
+import 'package:aseedak/data/models/responses/UserModel.dart';
 import 'package:aseedak/data/models/responses/my_api_response.dart';
 import 'package:aseedak/data/repo/auth_repo.dart';
 import 'package:aseedak/view/start/auth/login/login_view.dart';
@@ -18,14 +19,14 @@ import '../../../widgets/custom_snack.dart';
 
 
 class ProfileVm extends BaseVm{
-
+  UserModel get currentUser => repo.getUserObject()!;
+  AuthRepo repo = GetIt.I.get<AuthRepo>();
 
 
   showDeleteAccountSheet(BuildContext context) {
     showCustomSheet(title: "Delete", subTitle: "Are you sure you want to delete your account?", onConfirmPressed: (){},confirmText: "YES, DELETE");
   }
 
-  AuthRepo repo = GetIt.I.get<AuthRepo>();
 
   showLogoutSheet(BuildContext context) {
     showCustomSheet(title: "Logout", subTitle: "Are you sure you want to logout?", onConfirmPressed: (){
