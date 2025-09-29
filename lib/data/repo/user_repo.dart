@@ -23,4 +23,60 @@ class UserRepo {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
     }
   }
+
+  Future<ApiResponse> joinGameRoom({required String roomCode}) async {
+    try {
+      Response response = await dioClient.post(
+          "${ApiEndPoints.joinRoom}$roomCode/join",
+      );
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+  Future<ApiResponse> leaveGameRoom({required String roomCode}) async {
+    try {
+      Response response = await dioClient.post(
+          "${ApiEndPoints.joinRoom}$roomCode/leave",
+      );
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+  Future<ApiResponse> getRoomDetails({required String roomCode}) async {
+    try {
+      Response response = await dioClient.get(
+          "${ApiEndPoints.joinRoom}$roomCode/complete",
+      );
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+
+  startGameRoom({required String roomCode}) async {
+    try {
+      Response response = await dioClient.post(
+        "${ApiEndPoints.joinRoom}$roomCode/start",
+      );
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+
+  claimWord({required String roomCode,required String word}) async {
+    try {
+      Response response = await dioClient.post(
+        "${ApiEndPoints.joinRoom}$roomCode/claim-word",
+        data: {
+          "word" : word
+        }
+      );
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
 }

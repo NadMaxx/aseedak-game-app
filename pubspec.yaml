@@ -29,6 +29,7 @@ dependencies:
   path_provider:
   permission_handler:
   smooth_page_indicator:
+  pusher_channels_flutter:
 dev_dependencies:
   flutter_test:
     sdk: flutter

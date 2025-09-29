@@ -1,5 +1,6 @@
 import 'package:aseedak/main.dart';
 import 'package:aseedak/widgets/simple_button.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -156,7 +157,7 @@ Future<void> showCustomSheetWithContent({
                       children: [
                         Expanded(
                           child: SimpleSlantedButton(
-                            text: cancelText ?? "CANCEL",
+                            text: cancelText ?? "cancel".tr(),
                             onPressed: onCancelPressed ?? () {
                               Navigator.pop(context);
                             },
@@ -165,7 +166,7 @@ Future<void> showCustomSheetWithContent({
                         SizedBox(width: 12.w),
                         Expanded(
                           child: SlantedButtonStack(
-                            text: confirmText ?? "YES",
+                            text: confirmText ?? "yes".tr(),
                             onPressed: onConfirmPressed,
                           ),
                         ),

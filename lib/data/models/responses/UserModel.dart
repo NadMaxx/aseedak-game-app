@@ -111,6 +111,10 @@ class User {
   int? get gamesWon => _gamesWon;
   int? get totalKills => _totalKills;
 
+  set email(String? value) {
+    _email = value;
+  }
+
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['id'] = _id;
@@ -127,6 +131,46 @@ class User {
     map['gamesWon'] = _gamesWon;
     map['totalKills'] = _totalKills;
     return map;
+  }
+
+  set phoneNumber(String? value) {
+    _phoneNumber = value;
+  }
+
+  set firstName(String? value) {
+    _firstName = value;
+  }
+
+  set lastName(String? value) {
+    _lastName = value;
+  }
+
+  set username(String? value) {
+    _username = value;
+  }
+
+  set avatar(String? value) {
+    _avatar = value;
+  }
+
+  set role(String? value) {
+    _role = value;
+  }
+
+  set isActive(bool? value) {
+    _isActive = value;
+  }
+
+  set emailVerified(bool? value) {
+    _emailVerified = value;
+  }
+
+  set gamesWon(int? value) {
+    _gamesWon = value;
+  }
+
+  set totalKills(int? value) {
+    _totalKills = value;
   }
 
 }

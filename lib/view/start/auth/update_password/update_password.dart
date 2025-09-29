@@ -1,18 +1,19 @@
+import 'dart:ui' as ui;
+
+import 'package:aseedak/data/models/passModels/SuccessPassModel.dart';
 import 'package:aseedak/data/utils/string_helpers.dart';
 import 'package:aseedak/view/start/auth/change_password/change_password_vm.dart';
-import 'package:aseedak/view/start/auth/login/login_view.dart';
+import 'package:aseedak/view/start/auth/update_password/update_password_vm.dart';
+import 'package:aseedak/view/success_screen/success_screen.dart';
+import 'package:aseedak/widgets/customCirle.dart';
+import 'package:aseedak/widgets/customText.dart';
+import 'package:aseedak/widgets/customTextField.dart';
+import 'package:aseedak/widgets/custom_button.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../data/models/passModels/SuccessPassModel.dart';
-import '../../../../widgets/customCirle.dart';
-import '../../../../widgets/customText.dart';
-import '../../../../widgets/customTextField.dart';
-import '../../../../widgets/custom_button.dart';
-import '../../../success_screen/success_screen.dart';
-import '../otp_screen/otp_screen.dart';
 
 class UpdatePassword extends StatelessWidget {
   static const String routeName = '/updatePassword';
@@ -20,137 +21,143 @@ class UpdatePassword extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UpdatePasswordVm>(builder: (context, vm, child) {
-      return Scaffold(
-        bottomNavigationBar: SafeArea(
-          child: SizedBox(
-            height: 100.h,
-
-            child: Padding(
+    return Consumer<ChangePasswordVM>(builder: (context, vm, child) {
+      return Directionality(
+        textDirection: context.locale.languageCode == 'ar'
+            ? ui.TextDirection.rtl
+            : ui.TextDirection.ltr,
+        child: Scaffold(
+          bottomNavigationBar: SafeArea(
+            child: SizedBox(
+              height: 100.h,
+              child: Padding(
                 padding: const EdgeInsets.symmetric(
                   vertical: 12.0,
                   horizontal: 20.0,
                 ),
-                child: SlantedButtonStack(text: "save new password".toUpperCase(), onPressed: (){
-                  Navigator.pushNamed(context, SuccessScreen.routeName, arguments: SuccessPassModel(
-                    title: "Password Updated Successfully!",
-                    buttonText: "OK, Great",
-                    route: "pop",
-                    message: "Your password has been successfully updated. You can now log in with your new password. If you need further assistance, feel free to reach out!",
-                    removeRoute: false,
-                  ));
-                })
+                child: vm.isLoading ? Center( child: CircularProgressIndicator(),) : SlantedButtonStack(
+                  text: "update_password_save_btn".tr().toUpperCase(),
+                  onPressed: () {
+                    vm.changePassword();
+                  },
+                ),
+              ),
             ),
           ),
-        ),
-
-        appBar: AppBar(
-          leading: InkWell(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: SvgPicture.asset("back".toSvgPath),
+          appBar: AppBar(
+            leading: InkWell(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: RotatedBox(
+                    quarterTurns: 2,
+                    child: SvgPicture.asset("back".toSvgPath)),
+              ),
             ),
           ),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 30.h),
-              CustomText(
-                text: "Update Password",
-                fontSize: 40.sp,
-                fontWeight: FontWeight.w400,
-                color: Colors.white,
-              ),
-              CustomText(
-                text: "Choose Password different from older one.",
-                fontSize: 16.sp,
-                fontWeight: FontWeight.normal,
-                color: Colors.white,
-                textAlign: TextAlign.center,
-                fontFamily: "Kanit",
-              ),
-              SizedBox(height: 50.h),
-              CustomText(
-                text: "Current Password",
-                fontSize: 16.sp,
-                fontWeight: FontWeight.normal,
-                color: Colors.white,
-                textAlign: TextAlign.center,
-                fontFamily: "Kanit",
-              ),
-              CustomTextField(
-                controller: vm.passwordController,
-                prefix: "lock",
-                hintText: "Enter Password",
-                obscureText: true,
-                validator: (v) {
-                  if(v == null || v.isEmpty){
-                    return "Password is required";
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 20.h),
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18.0),
+            child: Form(
+              key: vm.formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 30.h),
+                  CustomText(
+                    text: "update_password_title".tr(),
+                    fontSize: 40.sp,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.white,
+                  ),
+                  CustomText(
+                    text: "update_password_subtitle".tr(),
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.normal,
+                    color: Colors.white,
+                    textAlign: TextAlign.center,
+                    fontFamily: "Kanit",
+                  ),
+                  SizedBox(height: 50.h),
 
-              CustomText(
-                text: "New Password",
-                fontSize: 16.sp,
-                fontWeight: FontWeight.normal,
-                color: Colors.white,
-                textAlign: TextAlign.center,
-                fontFamily: "Kanit",
-              ),
-              CustomTextField(
-                controller: vm.passwordController,
-                prefix: "lock",
-                hintText: "Enter Password",
-                obscureText: true,
-                validator: (v) {
-                  if(v == null || v.isEmpty){
-                    return "Password is required";
-                  }
-                  if(v.length < 6){
-                    return "Password must be at least 6 characters";
-                  }
-                  if(!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$').hasMatch(v)){
-                    return "Password must contain at least one letter and one number";
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 20.h),
-              CustomText(
-                text: "Confirm New Password",
-                fontSize: 16.sp,
-                fontWeight: FontWeight.normal,
-                color: Colors.white,
-                textAlign: TextAlign.center,
-                fontFamily: "Kanit",
-              ),
-              CustomTextField(
-                controller: vm.confirmPasswordController,
-                prefix: "lock",
-                hintText: "Enter Password",
-                obscureText: true,
-                validator: (v) {
-                  if(v == null || v.isEmpty){
-                    return "Password is required";
-                  }
-                  if(v != vm.passwordController.text){
-                    return "Passwords do not match";
-                  }
-                  return null;
-                },
-              ),
+                  // Current Password
+                  CustomText(
+                    text: "update_password_current".tr(),
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.normal,
+                    color: Colors.white,
+                    textAlign: TextAlign.center,
+                    fontFamily: "Kanit",
+                  ),
+                  CustomTextField(
+                    controller: vm.oldPassword,
+                    prefix: "lock",
+                    hintText: "update_password_hint".tr(),
+                    obscureText: true,
+                    validator: (v) {
+                      if (v == null || v.isEmpty) {
+                        return "update_password_required".tr();
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 20.h),
 
+                  // New Password
+                  CustomText(
+                    text: "update_password_new".tr(),
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.normal,
+                    color: Colors.white,
+                    textAlign: TextAlign.center,
+                    fontFamily: "Kanit",
+                  ),
+                  CustomTextField(
+                    controller: vm.passwordController,
+                    prefix: "lock",
+                    hintText: "update_password_hint".tr(),
+                    obscureText: true,
+                    validator: (v) {
+                      if (v == null || v.isEmpty) {
+                        return "update_password_required".tr();
+                      }
+                      if (v.length < 6) {
+                        return "update_password_length".tr();
+                      }
 
-            ],
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 20.h),
+
+                  // Confirm New Password
+                  CustomText(
+                    text: "update_password_confirm".tr(),
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.normal,
+                    color: Colors.white,
+                    textAlign: TextAlign.center,
+                    fontFamily: "Kanit",
+                  ),
+                  CustomTextField(
+                    controller: vm.confirmPasswordController,
+                    prefix: "lock",
+                    hintText: "update_password_hint".tr(),
+                    obscureText: true,
+                    validator: (v) {
+                      if (v == null || v.isEmpty) {
+                        return "update_password_required".tr();
+                      }
+                      if (v != vm.passwordController.text) {
+                        return "update_password_mismatch".tr();
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       );

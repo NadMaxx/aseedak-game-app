@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:aseedak/data/models/body/CreateRoomBody.dart';
 import 'package:aseedak/data/models/responses/UserModel.dart';
 import 'package:aseedak/data/models/responses/my_api_response.dart';
@@ -11,6 +13,7 @@ import 'package:aseedak/view/home/wait_room/wait_room.dart';
 import 'package:aseedak/widgets/customCirle.dart';
 import 'package:aseedak/widgets/customText.dart';
 import 'package:aseedak/widgets/custom_sheet.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -30,23 +33,23 @@ class DashboardVm extends BaseVm {
   showCreateRoomSheet() {
     TextEditingController roomController = TextEditingController();
     TextEditingController playerController = TextEditingController(text: "2");
+
     if (kDebugMode) {
       roomController.text = "Test Room";
     }
+
     final formKey = GlobalKey<FormState>();
 
     showCustomSheetWithContent(
       children: SingleChildScrollView(
-        // ✅ Makes sheet scrollable
         child: Padding(
           padding: EdgeInsets.only(
-            bottom:
-                MediaQuery.of(
-                  navigatorKey.currentContext!,
-                ).viewInsets.bottom, // ✅ Adjust for keyboard
+            bottom: MediaQuery.of(
+              navigatorKey.currentContext!,
+            ).viewInsets.bottom,
           ),
           child: Form(
-            key: formKey, // ✅ For validation
+            key: formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -56,7 +59,7 @@ class DashboardVm extends BaseVm {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CustomText(
-                        text: "Room Name",
+                        text: "create_room_title".tr(),
                         fontFamily: "Kanit",
                         fontWeight: FontWeight.w500,
                         fontSize: 18.sp,
@@ -64,11 +67,11 @@ class DashboardVm extends BaseVm {
                       CustomTextField(
                         controller: roomController,
                         prefix: "kamra",
-                        hintText: "Enter room name",
+                        hintText: "create_room_hint".tr(),
                         keyboardType: TextInputType.text,
                         validator: (v) {
                           if (v == null || v.isEmpty) {
-                            return "Room name is required";
+                            return "create_room_required".tr();
                           }
                           return null;
                         },
@@ -76,7 +79,7 @@ class DashboardVm extends BaseVm {
                       SizedBox(height: 10.h),
 
                       CustomText(
-                        text: "Select Players",
+                        text: "create_room_select_players".tr(),
                         fontFamily: "Kanit",
                         fontWeight: FontWeight.w500,
                         fontSize: 18.sp,
@@ -84,19 +87,18 @@ class DashboardVm extends BaseVm {
                       CustomTextField(
                         controller: playerController,
                         prefix: "bandy",
-                        hintText: "Enter number of players",
+                        hintText: "create_room_players_hint".tr(),
                         keyboardType: TextInputType.number,
-                        // ✅ number instead of email
                         validator: (v) {
                           if (v == null || v.isEmpty) {
-                            return "Number of players is required";
+                            return "create_room_players_required".tr();
                           }
                           final num? players = int.tryParse(v);
                           if (players == null) {
-                            return "Enter a valid number";
+                            return "create_room_players_invalid".tr();
                           }
                           if (players < 2) {
-                            return "At least 2 players required";
+                            return "create_room_players_min".tr();
                           }
                           return null;
                         },
@@ -112,8 +114,11 @@ class DashboardVm extends BaseVm {
         ),
       ),
       onConfirmPressed: () async {
-        if (!formKey.currentState!.validate()) return; // ✅ Validation check
-
+        if (!formKey.currentState!.validate()) return;
+        if(int.parse(playerController.text.trim()) > 4){
+          showBuyPlayerSheet();
+          return;
+        }
         Navigator.pop(navigatorKey.currentContext!);
         showLoaderDialog();
 
@@ -124,10 +129,75 @@ class DashboardVm extends BaseVm {
           difficulty: "medium",
           timeLimit: 300,
           invitedUsers: [
-           "68d5780e7c37125af123beba"
+            "68d5780e7c37125af123beba"
           ],
         );
         await createRoom(createRoomBody);
+      },
+    );
+  }
+
+  showJoinRoomSheet() {
+    TextEditingController roomCodeController = TextEditingController();
+    if(kDebugMode){
+      roomCodeController.text = "48E9DF46";
+    }
+    final formKey = GlobalKey<FormState>();
+
+    showCustomSheetWithContent(
+      children: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(
+              navigatorKey.currentContext!,
+            ).viewInsets.bottom,
+          ),
+          child: Form(
+            key: formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomText(
+                        text: "join_room_code_label".tr(),
+                        fontFamily: "Kanit",
+                        fontWeight: FontWeight.w500,
+                        fontSize: 18.sp,
+                      ),
+                      CustomTextField(
+                        controller: roomCodeController,
+                        prefix: "kamra",
+                        hintText: "join_room_code_hint".tr(),
+                        keyboardType: TextInputType.text,
+                        validator: (v) {
+                          if (v == null || v.isEmpty) {
+                            return "join_room_code_required".tr();
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 10.h),
+                Divider(),
+              ],
+            ),
+          ),
+        ),
+      ),
+      onConfirmPressed: () async {
+        if (!formKey.currentState!.validate()) return;
+
+        Navigator.pop(navigatorKey.currentContext!);
+        showLoaderDialog();
+
+        // 🔥 Call your API here
+        await joinRoom(roomCodeController.text.trim());
       },
     );
   }
@@ -175,10 +245,11 @@ class DashboardVm extends BaseVm {
       AppConstants.roomData =
           RoomCreatedResponse.fromJson(apiResponse.response?.data);
       Navigator.pop(navigatorKey.currentContext!);
-      Navigator.pushNamed(navigatorKey.currentContext!, WaitingRoom.routeName);
+      Navigator.pushNamed(navigatorKey.currentContext!, WaitingRoom.routeName, arguments: AppConstants.roomData.room!.code);
       _isLoading = false;
       notifyListeners();
     } else {
+      Navigator.pop(navigatorKey.currentContext!);
       // MyErrorResponse myErrorResponse = MyErrorResponse.fromJson(apiResponse.error!);
       customSnack(
         text: apiResponse.error!.toString(),
@@ -189,5 +260,116 @@ class DashboardVm extends BaseVm {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  joinRoom(String roomCode) async {
+    ApiResponse apiResponse = await userRepo.joinGameRoom(roomCode: roomCode);
+    if (apiResponse.response != null &&
+        (apiResponse.response?.statusCode == 200 ||
+            apiResponse.response?.statusCode == 201)) {
+      AppConstants.roomData =
+          RoomCreatedResponse.fromJson(apiResponse.response?.data);
+      Navigator.pop(navigatorKey.currentContext!);
+      if(AppConstants.roomData.room != null && AppConstants.roomData.room!.status == "IN_PROGRESS"){
+        customSnack(
+          text: "Room is already in progress".tr(),
+          context: navigatorKey.currentContext!,
+          isSuccess: false,
+        );
+        return;
+
+      }
+      Navigator.pushNamed(navigatorKey.currentContext!, WaitingRoom.routeName,arguments: AppConstants.roomData.room!.code);
+      _isLoading = false;
+      notifyListeners();
+    } else {
+      Navigator.pop(navigatorKey.currentContext!);
+      // MyErrorResponse myErrorResponse = MyErrorResponse.fromJson(apiResponse.error!);
+      customSnack(
+        text: apiResponse.error!.toString(),
+        context: navigatorKey.currentContext!,
+        isSuccess: false,
+      );
+
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  void showBuyPlayerSheet() {
+    showCustomSheetWithContent(
+      children: Directionality(
+        textDirection: navigatorKey.currentContext!.locale.languageCode == 'ar'
+            ? ui.TextDirection.rtl
+            : ui.TextDirection.ltr,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomText(
+                    text: "buy_more_players_title".tr(),
+                    fontFamily: "Kanit",
+                    fontWeight: FontWeight.w600,
+                    fontSize: 20.sp,
+                  ),
+                  SizedBox(height: 10.h),
+                  CustomText(
+                    text: "buy_more_players_subtitle".tr(),
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: "Kanit",
+                  ),
+                  SizedBox(height: 20.h),
+
+                ],
+              ),
+            ),
+            const Divider(),
+            SizedBox(height: 10.h),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18.0),
+              child: Row(
+                children: [
+                  SvgPicture.asset("person".toSvgPath),
+                  SizedBox(width: 10.w),
+                  CustomText(
+                    text: "buy_more_players_4_players".tr(),
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: "Kanit",
+                  ),
+                  const Spacer(),
+                  CustomText(
+                    text:
+                    "5\$",
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: "Kanit",
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 10.h),
+            const Divider(),
+          ],
+        ),
+      ),
+      onConfirmPressed: () {
+        Navigator.pop(navigatorKey.currentContext!);
+
+        // ✅ Implement purchase logic
+        customSnack(
+          text: "purchase_success".tr(),
+          context: navigatorKey.currentContext!,
+          isSuccess: true,
+        );
+      },
+      confirmText: "buy_now".tr(),
+    );
   }
 }

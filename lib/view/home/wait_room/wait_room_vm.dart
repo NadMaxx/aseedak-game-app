@@ -1,18 +1,33 @@
+import 'dart:developer';
+
 import 'package:aseedak/data/base_vm.dart';
+import 'package:aseedak/data/models/responses/RoomComplete.dart';
+import 'package:aseedak/data/models/responses/my_api_response.dart';
+import 'package:aseedak/data/repo/auth_repo.dart';
+import 'package:aseedak/data/repo/user_repo.dart';
 import 'package:aseedak/data/utils/string_helpers.dart';
 import 'package:aseedak/view/home/game_room/game_room.dart';
 import 'package:aseedak/widgets/customText.dart';
+import 'package:aseedak/widgets/custom_snack.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../../data/utils/app_colors.dart';
 import '../../../data/utils/app_constants.dart';
 import '../../../main.dart';
+import '../../../services/pusherService.dart';
 
 class WaitingRoomVm extends BaseVm{
+  String roomCode;
+  AuthRepo authRepo = GetIt.I.get<AuthRepo>();
+  WaitingRoomVm({required this.roomCode}){
+    getRoomDetails(true);
+    connectSocket();
+  }
   List<Map<String, String>> players = [
     {
       "name": "Jack Adams",
@@ -33,11 +48,8 @@ class WaitingRoomVm extends BaseVm{
   ];
 
    showGameStartDialog(BuildContext context) async {
+     startGame();
     showLoaderDialog();
-    await Future.delayed(const Duration(seconds: 3),(){
-      Navigator.pop(navigatorKey.currentContext!);
-      Navigator.popAndPushNamed(navigatorKey.currentContext!, GameRoom.routeName);
-    });
   }
 
   showLoaderDialog() {
@@ -72,5 +84,84 @@ class WaitingRoomVm extends BaseVm{
       },
     );
   }
+  RoomComplete roomDetail = RoomComplete();
+  UserRepo userRepo = GetIt.I.get<UserRepo>();
+  bool isLoading = false;
+  getRoomDetails(showLoading) async {
+    isLoading = showLoading;
+    notifyListeners();
+    ApiResponse apiResponse = await userRepo.getRoomDetails(roomCode: roomCode);
+    if(apiResponse.response != null && apiResponse.response?.statusCode == 200){
+      roomDetail = RoomComplete.fromJson(apiResponse.response?.data);
+
+      isLoading = false;
+      notifyListeners();
+    }else{
+      isLoading = false;
+      notifyListeners();
+      customSnack(context: navigatorKey.currentContext!, text: "Something went wrong",isSuccess: false);
+    }
+  }
+
+  leaveRoom() async {
+
+    ApiResponse apiResponse = await userRepo.leaveGameRoom(roomCode: roomCode);
+    if(apiResponse.response != null && apiResponse.response?.statusCode == 200){
+
+      // Navigator.pop(navigatorKey.currentContext!);
+    }else{
+
+      customSnack(context: navigatorKey.currentContext!, text: "Something went wrong",isSuccess: false);
+    }
+  }
+
+  bool isStartingGame = false,willPop = true;
+
+  startGame() async {
+    if(roomDetail.room!.players!.length < 2){
+      customSnack(context: navigatorKey.currentContext!, text: "At least 2 players are required to start the game",isSuccess: false);
+      return;
+    }
+    isStartingGame = true;
+    notifyListeners();
+    ApiResponse apiResponse = await userRepo.startGameRoom(roomCode: roomCode);
+    if(apiResponse.response != null && apiResponse.response?.statusCode == 200){
+      willPop = false;
+      isStartingGame = true;
+      notifyListeners();
+      Navigator.pop(navigatorKey.currentContext!);
+      Navigator.popAndPushNamed(navigatorKey.currentContext!, GameRoom.routeName,arguments: roomCode);
+
+    }else{
+      Navigator.pop(navigatorKey.currentContext!);
+      isStartingGame = false;
+      notifyListeners();
+      customSnack(context: navigatorKey.currentContext!, text: "Something went wrong",isSuccess: false);
+    }
+  }
+  Future<void> connectSocket() async {
+    final pusher = RealtimeService(
+      pusherKey: "d440ce92ce74e8791deb", // NEXT_PUBLIC_PUSHER_KEY
+      pusherCluster: "mt1", // NEXT_PUBLIC_PUSHER_CLUSTER
+      userId: authRepo.getUserObject()!.user!.id.toString(),
+    );
+
+    await pusher.connect();
+
+    await pusher.subscribeEvent(
+      "room-$roomCode",
+      onNewMessage: (payload) {
+        log("New message payload: $payload");
+        getRoomDetails(false);
+      },
+      onTyping: (payload) {
+      },
+      onMessageRead: (payload) {
+      },
+    );
+  }
+
+
+
 
 }

@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 
 import 'package:aseedak/data/utils/app_colors.dart';
 import 'package:aseedak/data/utils/string_helpers.dart';
+import 'package:aseedak/view/home/profile/buy_avatar/buy_avatar.dart';
 import 'package:aseedak/view/home/profile/policies/policies_page.dart';
 import 'package:aseedak/view/home/profile/profile_settings/profile_settings.dart';
 import 'package:aseedak/view/home/profile/profile_vm.dart';
@@ -70,11 +71,19 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 40.h),
+
                 buildListTile(
                   "banda",
                   "profile_title".tr(),
                       () {
                     Navigator.pushNamed(context, ProfileSettings.routeName);
+                  },
+                ),
+                buildListTile(
+                  "banda",
+                  "buy_avatar_title".tr(),
+                      () {
+                    Navigator.pushNamed(context, BuyAvatarScreen.routeName);
                   },
                 ),
                 buildListTile(

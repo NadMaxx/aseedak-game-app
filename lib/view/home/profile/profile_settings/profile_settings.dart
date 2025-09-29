@@ -36,20 +36,17 @@ class ProfileSettings extends StatelessWidget {
                   vertical: 12.0,
                   horizontal: 20.0,
                 ),
-                child: SlantedButtonStack(
+                child:
+                vm.isLoading ?
+                const Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.white,
+                  ),
+                ):
+                SlantedButtonStack(
                   text: "profile_settings_update".tr().toUpperCase(),
                   onPressed: () {
-                    Navigator.pushNamed(
-                      context,
-                      SuccessScreen.routeName,
-                      arguments: SuccessPassModel(
-                        title: "profile_settings_success_title".tr(),
-                        buttonText: "profile_settings_success_btn".tr(),
-                        route: "pop",
-                        removeRoute: false,
-                        message: "profile_settings_success_msg".tr(),
-                      ),
-                    );
+                    vm.updateProfile();
                   },
                 ),
               ),

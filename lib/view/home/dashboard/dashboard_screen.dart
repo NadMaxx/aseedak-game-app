@@ -96,7 +96,9 @@ class DashboardScreen extends StatelessWidget {
                         SizedBox(height: 16.h),
                         SlantedButtonStack(
                           text: "dashboard_join_room".tr(),
-                          onPressed: () {},
+                          onPressed: () {
+                            vm.showJoinRoomSheet();
+                          },
                         ),
                         SizedBox(height: 16.h),
                       ],

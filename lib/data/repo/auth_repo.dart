@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/body/RegisterBody.dart';
+import '../models/body/UserBody.dart';
 import '../models/responses/UserModel.dart';
 import '../models/responses/my_api_response.dart';
 import '../remote/dio/dio_client.dart';
@@ -133,6 +134,31 @@ class AuthRepo {
       data: {
         "email": email,
       },
+    ).then((response) {
+      return ApiResponse.withSuccess(response);
+    }).catchError((error) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(error));
+    });
+  }
+  changePassword({required String currentPassword, required String newPassword}) {
+    return dioClient.post(
+      ApiEndPoints.changePassword,
+      data:
+        {
+          "currentPassword": currentPassword,
+          "newPassword": newPassword
+        }
+      ,
+    ).then((response) {
+      return ApiResponse.withSuccess(response);
+    }).catchError((error) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(error));
+    });
+  }
+  updateProfile({required UserBody body}) {
+    return dioClient.put(
+      ApiEndPoints.me,
+      data: body.toJson(),
     ).then((response) {
       return ApiResponse.withSuccess(response);
     }).catchError((error) {

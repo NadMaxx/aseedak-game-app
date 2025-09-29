@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:aseedak/view/home/dashboard/dashboard_vm.dart';
 import 'package:aseedak/view/home/game_room/game_room_vm.dart';
+import 'package:aseedak/view/home/profile/buy_avatar/buy_avatar_vm.dart';
 import 'package:aseedak/view/home/profile/profile_settings/profile_settings_vm.dart';
 import 'package:aseedak/view/home/profile/profile_vm.dart';
 import 'package:aseedak/view/home/wait_room/wait_room_vm.dart';
@@ -15,6 +16,7 @@ import 'package:provider/provider.dart';
 import '../data/models/passModels/SuccessPassModel.dart';
 import '../view/home/dashboard/dashboard_screen.dart';
 import '../view/home/game_room/game_room.dart';
+import '../view/home/profile/buy_avatar/buy_avatar.dart';
 import '../view/home/profile/policies/policies_page.dart';
 import '../view/home/profile/profile_screen.dart';
 import '../view/home/profile/profile_settings/profile_settings.dart';
@@ -26,6 +28,7 @@ import '../view/start/auth/login/login_vm.dart';
 import '../view/start/auth/otp_screen/otp_screen.dart';
 import '../view/start/auth/sign_up/sign_up.dart';
 import '../view/start/auth/update_password/update_password.dart';
+import '../view/start/auth/update_password/update_password_vm.dart';
 import '../view/start/onboarding/onboarding.dart';
 import '../view/start/splash/splash_view.dart';
 import '../view/start/splash/splash_vm.dart';
@@ -125,21 +128,34 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       case UpdatePassword.routeName:
       builder =
           (context) => ChangeNotifierProvider(
-        create: (context) => UpdatePasswordVm(),
+        create: (context) => ChangePasswordVM(),
         child: const UpdatePassword(),
       );
       break;
-      case WaitingRoom.routeName:
+    case BuyAvatarScreen.routeName:
       builder =
           (context) => ChangeNotifierProvider(
-        create: (context) => WaitingRoomVm(),
+        create: (context) => BuyAvatarVm(),
+        child: const BuyAvatarScreen(),
+      );
+      break;
+      case WaitingRoom.routeName:
+        String roomId = settings.arguments as String;
+      builder =
+          (context) => ChangeNotifierProvider(
+        create: (context) => WaitingRoomVm(
+          roomCode: roomId
+        ),
         child: const WaitingRoom(),
       );
       break;
     case GameRoom.routeName:
+      String roomId = settings.arguments as String;
       builder =
           (context) => ChangeNotifierProvider(
-        create: (context) => GameRoomVm(),
+        create: (context) => GameRoomVm(
+          roomCode: roomId
+        ),
         child: const GameRoom(),
       );
       break;
