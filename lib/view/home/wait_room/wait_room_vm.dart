@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:aseedak/data/base_vm.dart';
@@ -27,6 +28,7 @@ class WaitingRoomVm extends BaseVm{
   WaitingRoomVm({required this.roomCode}){
     getRoomDetails(true);
     connectSocket();
+
   }
   List<Map<String, String>> players = [
     {
@@ -93,7 +95,7 @@ class WaitingRoomVm extends BaseVm{
     ApiResponse apiResponse = await userRepo.getRoomDetails(roomCode: roomCode);
     if(apiResponse.response != null && apiResponse.response?.statusCode == 200){
       roomDetail = RoomComplete.fromJson(apiResponse.response?.data);
-
+      // _startPolling();
       isLoading = false;
       notifyListeners();
     }else{
@@ -161,7 +163,16 @@ class WaitingRoomVm extends BaseVm{
     );
   }
 
-
-
-
+  // Timer? _timer;
+  // void _startPolling() {
+  //   _timer = Timer.periodic(const Duration(seconds: 15), (timer) {
+  //     getRoomDetails(false);
+  //   });
+  // }
+  //
+  // @override
+  // void dispose() {
+  //   _timer?.cancel(); // ✅ Stops when leaving screen
+  //   super.dispose();
+  // }
 }

@@ -66,12 +66,12 @@ class UserRepo {
     }
   }
 
-  claimWord({required String roomCode,required String word}) async {
+  requestKill({required String roomCode,required String targetId}) async {
     try {
       Response response = await dioClient.post(
-        "${ApiEndPoints.joinRoom}$roomCode/claim-word",
+        "${ApiEndPoints.joinRoom}$roomCode/kill-request",
         data: {
-          "word" : word
+          "targetId" : targetId
         }
       );
       return ApiResponse.withSuccess(response);

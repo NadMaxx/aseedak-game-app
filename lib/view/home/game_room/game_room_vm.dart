@@ -12,10 +12,10 @@ class GameRoomVm extends BaseVm {
   String roomCode;
   GameRoomVm({required this.roomCode}){
     getRoomDetails(true);
-    roomCode = "4D03D13B";
   }
 
   Players myPlayer = Players();
+  Players myTarget = Players();
 
   RoomComplete roomDetail = RoomComplete();
   UserRepo userRepo = GetIt.I.get<UserRepo>();
@@ -32,6 +32,14 @@ class GameRoomVm extends BaseVm {
           myPlayer = element;
         }
       });
+      String targetId = myPlayer.target!.user!.id ?? "";
+
+      roomDetail.room?.players?.forEach((element) {
+        if(element.user!.id! == targetId){
+          myTarget = element;
+        }
+      });
+
       isLoading = false;
       notifyListeners();
     }else{
@@ -40,13 +48,25 @@ class GameRoomVm extends BaseVm {
       customSnack(context: navigatorKey.currentContext!, text: "Something went wrong",isSuccess: false);
     }
   }
-
+  List<String> claimedWords = [];
   claimTheWord(String word) async {
-    ApiResponse apiResponse = await userRepo.claimWord(roomCode: roomCode, word: word);
+   claimedWords.add(word);
+   notifyListeners();
+  }
+  bool requestingKill = false;
+  requestKill() async {
+    requestingKill = true;
+    notifyListeners();
+    ApiResponse apiResponse = await userRepo.requestKill(roomCode: roomCode, targetId: myTarget.user!.id!);
     if(apiResponse.response != null && apiResponse.response?.statusCode == 200){
       getRoomDetails(false);
+      requestingKill = false;
+      notifyListeners();
+      customSnack(context: navigatorKey.currentContext!, text: "Kill request sent",isSuccess: true);
     }else{
-      customSnack(context: navigatorKey.currentContext!, text: "Something went wrong",isSuccess: false);
+      requestingKill = false;
+      notifyListeners();
+      customSnack(context: navigatorKey.currentContext!, text: "Something went wrong",isSuccess: true);
     }
   }
 }
