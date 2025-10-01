@@ -70,7 +70,7 @@ class _GameRoomState extends State<GameRoom> {
                       ),
                       confirmText: "yes_quit".tr(),
                       onConfirmPressed: () {
-                        Navigator.pop(context);
+                        // Navigator.pop(context);
                         Navigator.pop(context);
                       },
                     );
@@ -147,7 +147,7 @@ class _GameRoomState extends State<GameRoom> {
                     vm.requestingKill ?
                     Center(child: CustomLoader(),):
                     SlantedButtonStack(
-                      text: "Target Assassinated".toUpperCase(),
+                      text: "Target Assassinated".tr(),
                       onPressed: () {
                         vm.requestKill();
                       },

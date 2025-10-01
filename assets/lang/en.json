@@ -30,6 +30,11 @@
   "update_password_success_msg": "Your password has been successfully updated. You can now log in with your new password. If you need further assistance, feel free to reach out!",
   "create_room_title": "Room Name",
   "buy_avatar_name": "Avatar {0}",
+  "eliminated_title": "YOU'VE BEEN ELIMINATED!",
+  "eliminated_message": "An assassination has been reported against you. Confirm if this assassination is valid. Once confirmed, you’ll be officially out of the game.",
+  "confirm": "CONFIRM",
+  "Target Assassinated": "Target Assassinated",
+
   "create_room_hint": "Enter room name",
   "create_room_required": "Room name is required",
   "create_room_select_players": "Select Players",

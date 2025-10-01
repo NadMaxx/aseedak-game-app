@@ -105,20 +105,25 @@ class WaitingRoomVm extends BaseVm{
     }
   }
 
+  unsubEvent() async {
+    pusher.unsubEvent("room-$roomCode");
+    pusher.unsubUser("user-${ authRepo.getUserObject()!.user!.id.toString()}");
+    pusher.disconnect();
+  }
   leaveRoom() async {
-
+    unsubEvent();
     ApiResponse apiResponse = await userRepo.leaveGameRoom(roomCode: roomCode);
     if(apiResponse.response != null && apiResponse.response?.statusCode == 200){
-
-      // Navigator.pop(navigatorKey.currentContext!);
     }else{
-
       customSnack(context: navigatorKey.currentContext!, text: "Something went wrong",isSuccess: false);
     }
   }
 
   bool isStartingGame = false,willPop = true;
-
+  final pusher = RealtimeService(
+    pusherKey: "d440ce92ce74e8791deb", // NEXT_PUBLIC_PUSHER_KEY
+    pusherCluster: "mt1", // NEXT_PUBLIC_PUSHER_CLUSTER
+  );
   startGame() async {
     if(roomDetail.room!.players!.length < 2){
       customSnack(context: navigatorKey.currentContext!, text: "At least 2 players are required to start the game",isSuccess: false);
@@ -128,11 +133,12 @@ class WaitingRoomVm extends BaseVm{
     notifyListeners();
     ApiResponse apiResponse = await userRepo.startGameRoom(roomCode: roomCode);
     if(apiResponse.response != null && apiResponse.response?.statusCode == 200){
+      await unsubEvent();
       willPop = false;
       isStartingGame = true;
       notifyListeners();
       Navigator.pop(navigatorKey.currentContext!);
-      Navigator.popAndPushNamed(navigatorKey.currentContext!, GameRoom.routeName,arguments: roomCode);
+      Navigator.pushReplacementNamed(navigatorKey.currentContext!, GameRoom.routeName,arguments: roomCode);
 
     }else{
       Navigator.pop(navigatorKey.currentContext!);
@@ -142,23 +148,21 @@ class WaitingRoomVm extends BaseVm{
     }
   }
   Future<void> connectSocket() async {
-    final pusher = RealtimeService(
-      pusherKey: "d440ce92ce74e8791deb", // NEXT_PUBLIC_PUSHER_KEY
-      pusherCluster: "mt1", // NEXT_PUBLIC_PUSHER_CLUSTER
-      userId: authRepo.getUserObject()!.user!.id.toString(),
-    );
+
 
     await pusher.connect();
-
+    await pusher.subscribeUserChannel(authRepo.getUserObject()!.user!.id.toString());
     await pusher.subscribeEvent(
       "room-$roomCode",
-      onNewMessage: (payload) {
-        log("New message payload: $payload");
+      onGameStart: (payload) async {
+        await unsubEvent();
+        Navigator.pushReplacementNamed(navigatorKey.currentContext!, GameRoom.routeName,arguments: roomCode);
+      },
+      onUserJoin: (payload) {
         getRoomDetails(false);
       },
-      onTyping: (payload) {
-      },
-      onMessageRead: (payload) {
+      playerLeft: (payload) {
+        getRoomDetails(false);
       },
     );
   }

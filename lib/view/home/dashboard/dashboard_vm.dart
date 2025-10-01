@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:aseedak/data/models/body/CreateRoomBody.dart';
+import 'package:aseedak/data/models/responses/ProgressRooms.dart';
 import 'package:aseedak/data/models/responses/UserModel.dart';
 import 'package:aseedak/data/models/responses/my_api_response.dart';
 import 'package:aseedak/data/repo/auth_repo.dart';
@@ -9,6 +10,7 @@ import 'package:aseedak/data/utils/app_colors.dart';
 import 'package:aseedak/data/utils/app_constants.dart';
 import 'package:aseedak/data/utils/string_helpers.dart';
 import 'package:aseedak/main.dart';
+import 'package:aseedak/view/home/game_room/game_room.dart';
 import 'package:aseedak/view/home/wait_room/wait_room.dart';
 import 'package:aseedak/widgets/customCirle.dart';
 import 'package:aseedak/widgets/customText.dart';
@@ -29,7 +31,9 @@ import '../../../widgets/custom_snack.dart';
 class DashboardVm extends BaseVm {
   UserRepo userRepo = GetIt.I.get<UserRepo>();
   AuthRepo authRepo = GetIt.I.get<AuthRepo>();
-
+  DashboardVm(){
+    // getInProgressRooms();
+  }
   showCreateRoomSheet() {
     TextEditingController roomController = TextEditingController();
     TextEditingController playerController = TextEditingController(text: "2");
@@ -140,7 +144,7 @@ class DashboardVm extends BaseVm {
   showJoinRoomSheet() {
     TextEditingController roomCodeController = TextEditingController();
     if(kDebugMode){
-      roomCodeController.text = "5795A919";
+      roomCodeController.text = "EB374813";
     }
     final formKey = GlobalKey<FormState>();
 
@@ -371,5 +375,31 @@ class DashboardVm extends BaseVm {
       },
       confirmText: "buy_now".tr(),
     );
+  }
+
+   getInProgressRooms()async {
+    ApiResponse apiResponse = await userRepo.inProgressRooms();
+    if (apiResponse.response != null &&
+        (apiResponse.response?.statusCode == 200 ||
+            apiResponse.response?.statusCode == 201)) {
+      ProgressRooms progressRooms =
+          ProgressRooms.fromJson(apiResponse.response?.data);
+      if(progressRooms.rooms == null || progressRooms.rooms!.isEmpty){
+        return;
+      }
+      Navigator.pushNamedAndRemoveUntil(navigatorKey.currentState!.context, GameRoom.routeName, arguments: progressRooms.rooms!.first.code!, (R)=>false );
+      notifyListeners();
+    } else {
+      // MyErrorResponse myErrorResponse = MyErrorResponse.fromJson(apiResponse.error!);
+      customSnack(
+        text: apiResponse.error!.toString(),
+        context: navigatorKey.currentContext!,
+        isSuccess: false,
+      );
+
+      _isLoading = false;
+      notifyListeners();
+    }
+
   }
 }

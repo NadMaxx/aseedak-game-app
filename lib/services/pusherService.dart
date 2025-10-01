@@ -6,14 +6,12 @@ import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 class RealtimeService {
   final String pusherKey;
   final String pusherCluster;
-  final String userId;
 
   late final PusherChannelsFlutter _pusher;
 
   RealtimeService({
     required this.pusherKey,
     required this.pusherCluster,
-    required this.userId,
   });
 
   Future<void> connect() async {
@@ -23,31 +21,42 @@ class RealtimeService {
       cluster: "mt1",
       onEvent: (PusherEvent event) {
         if (kDebugMode) {
-          print('Pusher event: ${event.channelName} ${event.eventName} ${event.data}');
+          log('Pusher event: ${event.channelName} ${event.eventName} ${event.data}');
         }
       },
       onConnectionStateChange: (String currentState, String? previousState) {
-        if (kDebugMode) print('Pusher state: $previousState -> $currentState');
+        if (kDebugMode) log('Pusher state: $previousState -> $currentState');
       },
       onError: (String message, int? code, dynamic exception) {
-        if (kDebugMode) print('Pusher error: $message ($code)');
+        if (kDebugMode) log('Pusher error: $message ($code)');
       },
     );
 
     await _pusher.connect();
-    await subscribeUserChannel(userId);
   }
 
   Future<void> subscribeUserChannel(String userId) async {
     final channelName = 'user-$userId';
-    await _pusher.subscribe(channelName: channelName);
+    await _pusher.subscribe(channelName: channelName).then((v){
+      if (kDebugMode) {
+        log('Subscribed to user channel: $channelName');
+      }
+    });
+    _pusher.onEvent = (PusherEvent event) {
+      log("Event on user channel: ${event.channelName}, ${event.eventName}, ${event.data}");
+      if (event.channelName == channelName && event.eventName == 'new-message') {
+        final data = _safeJson(event.data);
+
+      }
+    };
     // _pusher.onEvent
   }
 
   Future<void> subscribeEvent(String chatRoomId, {
-    void Function(Map<String, dynamic> payload)? onNewMessage,
-    void Function(Map<String, dynamic> payload)? onTyping,
-    void Function(Map<String, dynamic> payload)? onMessageRead,
+    void Function(Map<String, dynamic> payload)? onGameStart,
+    void Function(Map<String, dynamic> payload)? onUserJoin,
+    void Function(Map<String, dynamic> payload)? playerLeft,
+    void Function(Map<String, dynamic> payload)? killRequest,
   }) async {
     try{
       log("Subscribing to chat room: $chatRoomId");
@@ -59,10 +68,29 @@ class RealtimeService {
       });
 
       _pusher.onEvent = (PusherEvent event) {
-        if (event.channelName == channelName && event.eventName == 'new-message') {
+        log("Event on channel: ${event.channelName}, ${event.eventName}, ${event.data}");
+        if (event.channelName == channelName && event.eventName == 'game-started') {
           final data = _safeJson(event.data);
-          if (onNewMessage != null) {
-            onNewMessage(data); // use ! since it's nullable
+          if (onGameStart != null) {
+            onGameStart(data); // use ! since it's nullable
+          }
+        }
+        if( event.channelName == channelName && event.eventName == 'player-joined') {
+          final data = _safeJson(event.data);
+          if (onUserJoin != null) {
+            onUserJoin(data); // use ! since it's nullable
+          }
+        }
+        if( event.channelName == channelName && event.eventName == 'player-left') {
+          final data = _safeJson(event.data);
+          if (playerLeft != null) {
+            playerLeft(data); // use ! since it's nullable
+          }
+        }
+        if( event.channelName == channelName && event.eventName == 'kill-request') {
+          final data = _safeJson(event.data);
+          if (killRequest != null) {
+            killRequest(data); // use ! since it's nullable
           }
         }
       };
@@ -74,8 +102,11 @@ class RealtimeService {
 
   }
 
-  Future<void> unsubscribeChat(String chatRoomId) async {
-    await _pusher.unsubscribe(channelName: 'chat-$chatRoomId');
+  Future<void> unsubEvent(String chatRoomId) async {
+    await _pusher.unsubscribe(channelName: 'room-$chatRoomId');
+  }
+  Future<void> unsubUser(String chatRoomId) async {
+    await _pusher.unsubscribe(channelName: 'user-$chatRoomId');
   }
 
   Future<void> disconnect() async {

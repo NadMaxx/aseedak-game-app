@@ -79,4 +79,28 @@ class UserRepo {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
     }
   }
+  confirmKill({required String roomCode,required String killId}) async {
+    try {
+      Response response = await dioClient.post(
+        "${ApiEndPoints.joinRoom}$roomCode/confirm-kill",
+        data: {
+          "killId" : killId,
+          "confirmed": true
+        }
+      );
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+  inProgressRooms() async {
+    try {
+      Response response = await dioClient.get(
+        "${ApiEndPoints.joinRoom}inprogress",
+      );
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
 }
