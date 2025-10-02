@@ -144,7 +144,7 @@ class DashboardVm extends BaseVm {
   showJoinRoomSheet() {
     TextEditingController roomCodeController = TextEditingController();
     if(kDebugMode){
-      roomCodeController.text = "EB374813";
+      roomCodeController.text = "65B5964C";
     }
     final formKey = GlobalKey<FormState>();
 

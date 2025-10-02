@@ -69,7 +69,7 @@ class UserRepo {
   requestKill({required String roomCode,required String targetId}) async {
     try {
       Response response = await dioClient.post(
-        "${ApiEndPoints.joinRoom}$roomCode/kill-request",
+        "${ApiEndPoints.joinRoom}$roomCode/eliminate",
         data: {
           "targetId" : targetId
         }
@@ -82,9 +82,9 @@ class UserRepo {
   confirmKill({required String roomCode,required String killId}) async {
     try {
       Response response = await dioClient.post(
-        "${ApiEndPoints.joinRoom}$roomCode/confirm-kill",
+        "${ApiEndPoints.joinRoom}$roomCode/confirm-elimination",
         data: {
-          "killId" : killId,
+          "eliminationId" : killId,
           "confirmed": true
         }
       );

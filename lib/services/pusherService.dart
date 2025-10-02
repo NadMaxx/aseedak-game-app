@@ -35,7 +35,11 @@ class RealtimeService {
     await _pusher.connect();
   }
 
-  Future<void> subscribeUserChannel(String userId) async {
+  Future<void> subscribeUserChannel(
+      String userId,{
+        void Function(Map<String, dynamic> payload)? killRequest,
+      }
+      ) async {
     final channelName = 'user-$userId';
     await _pusher.subscribe(channelName: channelName).then((v){
       if (kDebugMode) {
@@ -43,10 +47,13 @@ class RealtimeService {
       }
     });
     _pusher.onEvent = (PusherEvent event) {
-      log("Event on user channel: ${event.channelName}, ${event.eventName}, ${event.data}");
-      if (event.channelName == channelName && event.eventName == 'new-message') {
+      if (event.eventName == ' elimination-request') {
+        log("Event on user channel: ${event.channelName}, ${event.eventName}, ${event.data}");
+        log("Kill request received in user channel ${killRequest}" );
         final data = _safeJson(event.data);
-
+        if (killRequest != null) {
+          killRequest(data); // use ! since it's nullable
+        }
       }
     };
     // _pusher.onEvent
@@ -57,6 +64,7 @@ class RealtimeService {
     void Function(Map<String, dynamic> payload)? onUserJoin,
     void Function(Map<String, dynamic> payload)? playerLeft,
     void Function(Map<String, dynamic> payload)? killRequest,
+    void Function(Map<String, dynamic> payload)? eliminationConfirmed,
   }) async {
     try{
       log("Subscribing to chat room: $chatRoomId");
@@ -87,10 +95,16 @@ class RealtimeService {
             playerLeft(data); // use ! since it's nullable
           }
         }
-        if( event.channelName == channelName && event.eventName == 'kill-request') {
+        if( event.eventName == 'elimination-request') {
           final data = _safeJson(event.data);
           if (killRequest != null) {
             killRequest(data); // use ! since it's nullable
+          }
+        }
+        if( event.eventName == 'elimination-confirmed') {
+          final data = _safeJson(event.data);
+          if (eliminationConfirmed != null) {
+            eliminationConfirmed(data); // use ! since it's nullable
           }
         }
       };

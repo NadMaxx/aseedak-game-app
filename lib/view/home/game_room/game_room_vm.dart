@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:ui' as ui;
 
 import 'package:aseedak/data/base_vm.dart';
@@ -49,7 +50,11 @@ class GameRoomVm extends BaseVm {
 
 
     await pusher.connect();
-    await pusher.subscribeUserChannel(authRepo.getUserObject()!.user!.id.toString());
+    await pusher.subscribeUserChannel(authRepo.getUserObject()!.user!.id.toString(),
+        killRequest: (payload){
+      // log("Kill request received in user channel");
+      //   showKillRequestDialog(payload);
+    });
     await pusher.subscribeEvent(
       "room-$roomCode",
       killRequest: (payload) {
@@ -59,6 +64,9 @@ class GameRoomVm extends BaseVm {
         getRoomDetails(false);
       },
       playerLeft: (payload) {
+        getRoomDetails(false);
+      },
+      eliminationConfirmed: (payload) {
         getRoomDetails(false);
       },
     );
@@ -90,6 +98,12 @@ class GameRoomVm extends BaseVm {
           myTarget = element;
         }
       });
+      if(roomDetail.room!.status == "FINISHED") {
+        Navigator.pushNamedAndRemoveUntil(navigatorKey.currentContext!, DashboardScreen.routeName, (r)=> false);
+        customSnack(context: navigatorKey.currentContext!,
+            text: "game_ended".tr(),
+            isSuccess: true);
+      }
 
       isLoading = false;
       notifyListeners();
@@ -123,8 +137,7 @@ class GameRoomVm extends BaseVm {
   confirmKill(String killId) async {
     ApiResponse apiResponse = await userRepo.confirmKill(roomCode: roomCode, killId: killId);
     if(apiResponse.response != null && apiResponse.response?.statusCode == 200){
-      await leaveRoom();
-      Navigator.pushNamedAndRemoveUntil(navigatorKey.currentContext!, DashboardScreen.routeName, (r)=>false);
+     await getRoomDetails(false);
     }else{
       customSnack(context: navigatorKey.currentContext!, text: apiResponse.error.toString(),isSuccess: false);
     }
@@ -170,9 +183,9 @@ class GameRoomVm extends BaseVm {
               context: navigatorKey.currentState!.context, builder: (ctx){
             return CustomLoader();
           });
-          await confirmKill(payload["killRequest"]['id'].toString());
+          await confirmKill(payload["elimination"]['id'].toString());
           navigatorKey.currentState!.pop();
-
+          navigatorKey.currentState!.pop();
     });
   }
 }
