@@ -13,6 +13,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart'; // ✅ For tr()
+import 'package:share_plus/share_plus.dart';
 
 import '../../../widgets/cache_image.dart';
 import '../../../widgets/custom_sheet.dart';
@@ -193,7 +194,7 @@ class WaitingRoom extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           CustomText(
-                            text: "https://www.sample.info?roomCode=${vm.roomDetail.room?.code}",
+                            text: "https://assedak-app.vercel.app/${vm.roomDetail.room?.code}",
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w400,
                             fontFamily: "Kanit",
@@ -203,7 +204,11 @@ class WaitingRoom extends StatelessWidget {
                           SimpleSlantedButton(
                             color: AppColors.secondary,
                             text: "waiting_room_share_link".tr().toUpperCase(),
-                            onPressed: () {},
+                            onPressed: () {
+                              SharePlus.instance.share(
+                                  ShareParams(text: "Hey! Join my game room using this link:\nhttps://assedak-app.vercel.app/${vm.roomDetail.room?.code}\nor use the code: ${vm.roomDetail.room?.code}")
+                              );
+                            },
                           )
                         ],
                       ),

@@ -1,5 +1,8 @@
 import 'dart:developer';
+import 'dart:ui' as ui;
 
+import 'package:aseedak/data/utils/string_helpers.dart';
+import 'package:aseedak/main.dart';
 import 'package:aseedak/view/home/dashboard/dashboard_vm.dart';
 import 'package:aseedak/view/home/game_room/game_room_vm.dart';
 import 'package:aseedak/view/home/profile/buy_avatar/buy_avatar_vm.dart';
@@ -10,7 +13,9 @@ import 'package:aseedak/view/start/auth/change_password/change_password_vm.dart'
 import 'package:aseedak/view/start/auth/forgot_password/forgot_password_vm.dart';
 import 'package:aseedak/view/start/auth/otp_screen/otp_vm.dart';
 import 'package:aseedak/view/start/auth/sign_up/sign_up_vm.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 import '../data/models/passModels/SuccessPassModel.dart';
@@ -184,12 +189,30 @@ Route<dynamic> generateRoute(RouteSettings settings) {
 Route<dynamic> errorRoute() {
   return MaterialPageRoute(
     builder: (_) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('', style: TextStyle(color: Colors.black)),
-          forceMaterialTransparency: true,
+      return Directionality(
+        textDirection: navigatorKey.currentContext!.locale.languageCode == 'ar'
+            ? ui.TextDirection.rtl
+            : ui.TextDirection.ltr,
+        child: Scaffold(
+          appBar: AppBar(
+            leading: InkWell(
+              onTap: () {
+                Navigator.of(navigatorKey.currentContext!).pop();
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: RotatedBox(
+                  quarterTurns: 2,
+                  child: SvgPicture.asset("back".toSvgPath),
+                ),
+              ),
+            ),
+
+            title: const Text('', style: TextStyle(color: Colors.black)),
+            forceMaterialTransparency: true,
+          ),
+          body: const Center(child: Text('Oh No! You should not be here! ')),
         ),
-        body: const Center(child: Text('Oh No! You should not be here! ')),
       );
     },
   );
