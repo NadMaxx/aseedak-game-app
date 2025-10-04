@@ -1,5 +1,7 @@
+import 'dart:developer';
 import 'dart:ui' as ui;
 
+import 'package:app_links/app_links.dart';
 import 'package:aseedak/data/models/body/CreateRoomBody.dart';
 import 'package:aseedak/data/models/responses/ProgressRooms.dart';
 import 'package:aseedak/data/models/responses/UserModel.dart';
@@ -11,9 +13,11 @@ import 'package:aseedak/data/utils/app_constants.dart';
 import 'package:aseedak/data/utils/string_helpers.dart';
 import 'package:aseedak/main.dart';
 import 'package:aseedak/view/home/game_room/game_room.dart';
+import 'package:aseedak/view/home/profile/profile_settings/profile_settings.dart';
 import 'package:aseedak/view/home/wait_room/wait_room.dart';
 import 'package:aseedak/widgets/customCirle.dart';
 import 'package:aseedak/widgets/customText.dart';
+import 'package:aseedak/widgets/custom_loader.dart';
 import 'package:aseedak/widgets/custom_sheet.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,18 +26,44 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../data/base_vm.dart';
 import '../../../data/models/responses/RoomCreatedResponse.dart';
+import '../../../services/deeplink_manager.dart';
 import '../../../widgets/customTextField.dart';
 import '../../../widgets/custom_snack.dart';
 
 class DashboardVm extends BaseVm {
   UserRepo userRepo = GetIt.I.get<UserRepo>();
   AuthRepo authRepo = GetIt.I.get<AuthRepo>();
-  DashboardVm(){
-    // getInProgressRooms();
+
+  DashboardVm() {
+    _initializeDashboard();
   }
+
+  Future<void> _initializeDashboard() async {
+    // 1. Call your APIs first
+    await getInProgressRooms();
+
+    // 2. Set the deep link callback
+    DeepLinkManager.instance.setJoinRoomCallback((gameCode) async {
+      await joinRoom(gameCode);
+    });
+
+    // 3. Start listening for new deep links
+    DeepLinkManager.instance.startListening();
+
+    // 4. Handle any pending deep link from cold start
+    await DeepLinkManager.instance.handlePendingLink();
+  }
+
+  @override
+  void dispose() {
+    DeepLinkManager.instance.clearCallback();
+    super.dispose();
+  }
+
   showCreateRoomSheet() {
     TextEditingController roomController = TextEditingController();
     TextEditingController playerController = TextEditingController(text: "2");
@@ -144,7 +174,7 @@ class DashboardVm extends BaseVm {
   showJoinRoomSheet() {
     TextEditingController roomCodeController = TextEditingController();
     if(kDebugMode){
-      roomCodeController.text = "65B5964C";
+      roomCodeController.text = "9F67D77C";
     }
     final formKey = GlobalKey<FormState>();
 
@@ -200,7 +230,6 @@ class DashboardVm extends BaseVm {
         Navigator.pop(navigatorKey.currentContext!);
         showLoaderDialog();
 
-        // 🔥 Call your API here
         await joinRoom(roomCodeController.text.trim());
       },
     );
@@ -254,7 +283,6 @@ class DashboardVm extends BaseVm {
       notifyListeners();
     } else {
       Navigator.pop(navigatorKey.currentContext!);
-      // MyErrorResponse myErrorResponse = MyErrorResponse.fromJson(apiResponse.error!);
       customSnack(
         text: apiResponse.error!.toString(),
         context: navigatorKey.currentContext!,
@@ -288,7 +316,6 @@ class DashboardVm extends BaseVm {
       notifyListeners();
     } else {
       Navigator.pop(navigatorKey.currentContext!);
-      // MyErrorResponse myErrorResponse = MyErrorResponse.fromJson(apiResponse.error!);
       customSnack(
         text: apiResponse.error!.toString(),
         context: navigatorKey.currentContext!,
@@ -366,7 +393,6 @@ class DashboardVm extends BaseVm {
       onConfirmPressed: () {
         Navigator.pop(navigatorKey.currentContext!);
 
-        // ✅ Implement purchase logic
         customSnack(
           text: "purchase_success".tr(),
           context: navigatorKey.currentContext!,
@@ -377,20 +403,19 @@ class DashboardVm extends BaseVm {
     );
   }
 
-   getInProgressRooms()async {
+  getInProgressRooms() async {
     ApiResponse apiResponse = await userRepo.inProgressRooms();
     if (apiResponse.response != null &&
         (apiResponse.response?.statusCode == 200 ||
             apiResponse.response?.statusCode == 201)) {
       ProgressRooms progressRooms =
-          ProgressRooms.fromJson(apiResponse.response?.data);
+      ProgressRooms.fromJson(apiResponse.response?.data);
       if(progressRooms.rooms == null || progressRooms.rooms!.isEmpty){
         return;
       }
       Navigator.pushNamedAndRemoveUntil(navigatorKey.currentState!.context, GameRoom.routeName, arguments: progressRooms.rooms!.first.code!, (R)=>false );
       notifyListeners();
     } else {
-      // MyErrorResponse myErrorResponse = MyErrorResponse.fromJson(apiResponse.error!);
       customSnack(
         text: apiResponse.error!.toString(),
         context: navigatorKey.currentContext!,
@@ -400,6 +425,5 @@ class DashboardVm extends BaseVm {
       _isLoading = false;
       notifyListeners();
     }
-
   }
 }

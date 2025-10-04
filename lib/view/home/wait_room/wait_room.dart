@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 
 import 'package:aseedak/data/utils/app_colors.dart';
 import 'package:aseedak/data/utils/string_helpers.dart';
+import 'package:aseedak/view/home/dashboard/dashboard_screen.dart';
 import 'package:aseedak/view/home/wait_room/wait_room_vm.dart';
 import 'package:aseedak/widgets/customText.dart';
 import 'package:aseedak/widgets/custom_button.dart';
@@ -61,8 +62,7 @@ class WaitingRoom extends StatelessWidget {
                         confirmText: "yes_quit".tr(),
                         onConfirmPressed: (){
                           vm.leaveRoom();
-                          Navigator.pop(context);
-                          Navigator.pop(context);
+                          Navigator.pushNamedAndRemoveUntil(context, DashboardScreen.routeName, (r)=>false);
                         });
 
                   },

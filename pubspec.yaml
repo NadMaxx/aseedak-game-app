@@ -30,6 +30,8 @@ dependencies:
   permission_handler:
   smooth_page_indicator:
   pusher_channels_flutter:
+  app_links: ^6.4.1
+  firebase_core:
 dev_dependencies:
   flutter_test:
     sdk: flutter

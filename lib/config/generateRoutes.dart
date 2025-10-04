@@ -186,7 +186,7 @@ Route<dynamic> errorRoute() {
     builder: (_) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Arggg!', style: TextStyle(color: Colors.black)),
+          title: const Text('', style: TextStyle(color: Colors.black)),
           forceMaterialTransparency: true,
         ),
         body: const Center(child: Text('Oh No! You should not be here! ')),
