@@ -6,6 +6,7 @@ import 'package:aseedak/view/start/auth/login/login_view.dart';
 import 'package:aseedak/widgets/custom_loader.dart';
 import 'package:aseedak/widgets/custom_sheet.dart';
 import 'package:aseedak/widgets/simple_button.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
@@ -24,12 +25,16 @@ class ProfileVm extends BaseVm{
 
 
   showDeleteAccountSheet(BuildContext context) {
-    showCustomSheet(title: "Delete", subTitle: "Are you sure you want to delete your account?", onConfirmPressed: (){},confirmText: "YES, DELETE");
+    showCustomSheet(title: "delete_account_title".tr(), subTitle: "delete_account_message".tr(),
+        cancelText: "cancel".tr(),
+        onConfirmPressed: (){},confirmText: "confirm_delete_account".tr());
   }
 
 
   showLogoutSheet(BuildContext context) {
-    showCustomSheet(title: "Logout", subTitle: "Are you sure you want to logout?", onConfirmPressed: (){
+    showCustomSheet(title: "logout".tr(), subTitle: "logout_message".tr(),
+        cancelText: "cancel".tr(),
+        onConfirmPressed: (){
       navigatorKey.currentState?.pop();
       showDialog(
           barrierDismissible: false,
@@ -39,7 +44,7 @@ class ProfileVm extends BaseVm{
         );
       });
       userLogout();
-    },confirmText: "YES, LOGOUT");
+    },confirmText: "confirm_logout".tr());
   }
   userLogout()async{
     ApiResponse apiResponse = await repo.logout();

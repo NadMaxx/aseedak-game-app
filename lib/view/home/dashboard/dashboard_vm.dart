@@ -75,74 +75,79 @@ class DashboardVm extends BaseVm {
     final formKey = GlobalKey<FormState>();
 
     showCustomSheetWithContent(
-      children: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(
-              navigatorKey.currentContext!,
-            ).viewInsets.bottom,
-          ),
-          child: Form(
-            key: formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomText(
-                        text: "create_room_title".tr(),
-                        fontFamily: "Kanit",
-                        fontWeight: FontWeight.w500,
-                        fontSize: 18.sp,
-                      ),
-                      CustomTextField(
-                        controller: roomController,
-                        prefix: "kamra",
-                        hintText: "create_room_hint".tr(),
-                        keyboardType: TextInputType.text,
-                        validator: (v) {
-                          if (v == null || v.isEmpty) {
-                            return "create_room_required".tr();
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 10.h),
+      children: Directionality(
+        textDirection: navigatorKey.currentContext!.locale.languageCode == 'ar'
+            ? ui.TextDirection.rtl
+            : ui.TextDirection.ltr,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(
+                navigatorKey.currentContext!,
+              ).viewInsets.bottom,
+            ),
+            child: Form(
+              key: formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomText(
+                          text: "create_room_title".tr(),
+                          fontFamily: "Kanit",
+                          fontWeight: FontWeight.w500,
+                          fontSize: 18.sp,
+                        ),
+                        CustomTextField(
+                          controller: roomController,
+                          prefix: "kamra",
+                          hintText: "create_room_hint".tr(),
+                          keyboardType: TextInputType.text,
+                          validator: (v) {
+                            if (v == null || v.isEmpty) {
+                              return "create_room_required".tr();
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 10.h),
 
-                      CustomText(
-                        text: "create_room_select_players".tr(),
-                        fontFamily: "Kanit",
-                        fontWeight: FontWeight.w500,
-                        fontSize: 18.sp,
-                      ),
-                      CustomTextField(
-                        controller: playerController,
-                        prefix: "bandy",
-                        hintText: "create_room_players_hint".tr(),
-                        keyboardType: TextInputType.number,
-                        validator: (v) {
-                          if (v == null || v.isEmpty) {
-                            return "create_room_players_required".tr();
-                          }
-                          final num? players = int.tryParse(v);
-                          if (players == null) {
-                            return "create_room_players_invalid".tr();
-                          }
-                          if (players < 2) {
-                            return "create_room_players_min".tr();
-                          }
-                          return null;
-                        },
-                      ),
-                    ],
+                        CustomText(
+                          text: "create_room_select_players".tr(),
+                          fontFamily: "Kanit",
+                          fontWeight: FontWeight.w500,
+                          fontSize: 18.sp,
+                        ),
+                        CustomTextField(
+                          controller: playerController,
+                          prefix: "bandy",
+                          hintText: "create_room_players_hint".tr(),
+                          keyboardType: TextInputType.number,
+                          validator: (v) {
+                            if (v == null || v.isEmpty) {
+                              return "create_room_players_required".tr();
+                            }
+                            final num? players = int.tryParse(v);
+                            if (players == null) {
+                              return "create_room_players_invalid".tr();
+                            }
+                            if (players < 2) {
+                              return "create_room_players_min".tr();
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(height: 10.h),
-                Divider(),
-              ],
+                  SizedBox(height: 10.h),
+                  Divider(),
+                ],
+              ),
             ),
           ),
         ),
@@ -179,47 +184,52 @@ class DashboardVm extends BaseVm {
     final formKey = GlobalKey<FormState>();
 
     showCustomSheetWithContent(
-      children: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(
-              navigatorKey.currentContext!,
-            ).viewInsets.bottom,
-          ),
-          child: Form(
-            key: formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomText(
-                        text: "join_room_code_label".tr(),
-                        fontFamily: "Kanit",
-                        fontWeight: FontWeight.w500,
-                        fontSize: 18.sp,
-                      ),
-                      CustomTextField(
-                        controller: roomCodeController,
-                        prefix: "kamra",
-                        hintText: "join_room_code_hint".tr(),
-                        keyboardType: TextInputType.text,
-                        validator: (v) {
-                          if (v == null || v.isEmpty) {
-                            return "join_room_code_required".tr();
-                          }
-                          return null;
-                        },
-                      ),
-                    ],
+      children: Directionality(
+        textDirection: navigatorKey.currentContext!.locale.languageCode == 'ar'
+            ? ui.TextDirection.rtl
+            : ui.TextDirection.ltr,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(
+                navigatorKey.currentContext!,
+              ).viewInsets.bottom,
+            ),
+            child: Form(
+              key: formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomText(
+                          text: "join_room_code_label".tr(),
+                          fontFamily: "Kanit",
+                          fontWeight: FontWeight.w500,
+                          fontSize: 18.sp,
+                        ),
+                        CustomTextField(
+                          controller: roomCodeController,
+                          prefix: "kamra",
+                          hintText: "join_room_code_hint".tr(),
+                          keyboardType: TextInputType.text,
+                          validator: (v) {
+                            if (v == null || v.isEmpty) {
+                              return "join_room_code_required".tr();
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(height: 10.h),
-                Divider(),
-              ],
+                  SizedBox(height: 10.h),
+                  Divider(),
+                ],
+              ),
             ),
           ),
         ),
@@ -259,7 +269,6 @@ class DashboardVm extends BaseVm {
                     CupertinoActivityIndicator(color: Colors.white),
                   ],
                 ),
-                CustomText(text: "Creating Room ... (78%)"),
               ],
             ),
           ),

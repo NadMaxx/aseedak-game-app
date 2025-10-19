@@ -8,7 +8,7 @@ class ApiEndPoints{
 
   static const String login = "mobile/auth/login";
   static const String logout = "auth/logout";
-  static const String forgotPassword = "auth/forgot-password";
+  static const String forgotPassword = "/mobile/auth/forgot-password";
   static const String changePassword = "auth/change-password";
 
 

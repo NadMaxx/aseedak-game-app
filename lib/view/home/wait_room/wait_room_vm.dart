@@ -78,7 +78,6 @@ class WaitingRoomVm extends BaseVm{
                     CupertinoActivityIndicator(color: Colors.white,),
                   ],
                 ),
-                CustomText(text: "Starting Game ... (78%)")
               ],
             ),
           ),
