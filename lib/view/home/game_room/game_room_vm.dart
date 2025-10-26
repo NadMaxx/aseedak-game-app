@@ -99,7 +99,13 @@ class GameRoomVm extends BaseVm {
         }
       });
       if(roomDetail.room!.status == "FINISHED") {
-        Navigator.pushNamedAndRemoveUntil(navigatorKey.currentContext!, DashboardScreen.routeName, (r)=> false);
+        log("Game ended, navigating to dashboard");
+        // customSnack(context: navigatorKey.currentContext!,
+        //     text: "game_ended".tr(),
+        //     isSuccess: true);
+        navigatorKey.currentState!.pop();
+
+        Navigator.pushReplacementNamed(navigatorKey.currentContext!, DashboardScreen.routeName);
         customSnack(context: navigatorKey.currentContext!,
             text: "game_ended".tr(),
             isSuccess: true);
@@ -184,8 +190,7 @@ class GameRoomVm extends BaseVm {
             return CustomLoader();
           });
           await confirmKill(payload["elimination"]['id'].toString());
-          navigatorKey.currentState!.pop();
-          navigatorKey.currentState!.pop();
+          // navigatorKey.currentState!.pop();
     });
   }
 }

@@ -8,6 +8,7 @@ import 'package:aseedak/view/home/game_room/game_room_vm.dart';
 import 'package:aseedak/view/home/profile/buy_avatar/buy_avatar_vm.dart';
 import 'package:aseedak/view/home/profile/profile_settings/profile_settings_vm.dart';
 import 'package:aseedak/view/home/profile/profile_vm.dart';
+import 'package:aseedak/view/home/results/game_result_vm.dart';
 import 'package:aseedak/view/home/wait_room/wait_room_vm.dart';
 import 'package:aseedak/view/start/auth/change_password/change_password_vm.dart';
 import 'package:aseedak/view/start/auth/forgot_password/forgot_password_vm.dart';
@@ -25,6 +26,7 @@ import '../view/home/profile/buy_avatar/buy_avatar.dart';
 import '../view/home/profile/policies/policies_page.dart';
 import '../view/home/profile/profile_screen.dart';
 import '../view/home/profile/profile_settings/profile_settings.dart';
+import '../view/home/results/game_result.dart';
 import '../view/home/wait_room/wait_room.dart';
 import '../view/start/auth/change_password/change_password.dart';
 import '../view/start/auth/forgot_password/forgot_password.dart';
@@ -152,6 +154,16 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           roomCode: roomId
         ),
         child: const WaitingRoom(),
+      );
+      break;
+      case GameResult.routeName:
+        String roomId = settings.arguments as String;
+      builder =
+          (context) => ChangeNotifierProvider(
+        create: (context) => GameResultVm(
+          roomCode: roomId
+        ),
+        child: const GameResult(),
       );
       break;
     case GameRoom.routeName:

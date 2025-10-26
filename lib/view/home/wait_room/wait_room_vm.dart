@@ -51,7 +51,7 @@ class WaitingRoomVm extends BaseVm{
 
    showGameStartDialog(BuildContext context) async {
      startGame();
-    showLoaderDialog();
+
   }
 
   showLoaderDialog() {
@@ -128,6 +128,7 @@ class WaitingRoomVm extends BaseVm{
       customSnack(context: navigatorKey.currentContext!, text: "At least 2 players are required to start the game",isSuccess: false);
       return;
     }
+    showLoaderDialog();
     isStartingGame = true;
     notifyListeners();
     ApiResponse apiResponse = await userRepo.startGameRoom(roomCode: roomCode);
