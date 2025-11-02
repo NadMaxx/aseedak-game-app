@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:ui' as ui;
 
@@ -27,44 +28,129 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../../data/base_vm.dart';
 import '../../../data/models/responses/RoomCreatedResponse.dart';
 import '../../../services/deeplink_manager.dart';
 import '../../../widgets/customTextField.dart';
 import '../../../widgets/custom_snack.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 
 class DashboardVm extends BaseVm {
-  UserRepo userRepo = GetIt.I.get<UserRepo>();
-  AuthRepo authRepo = GetIt.I.get<AuthRepo>();
+  final UserRepo userRepo = GetIt.I.get<UserRepo>();
+  final AuthRepo authRepo = GetIt.I.get<AuthRepo>();
+  final InAppPurchase _inAppPurchase = InAppPurchase.instance;
+  StreamSubscription<List<PurchaseDetails>>? _subscription;
+
+  bool _available = false;
+  List<ProductDetails> _products = [];
+  final String _productId = 'extra_players';
 
   DashboardVm() {
     _initializeDashboard();
+    initStoreInfo();
   }
 
-  Future<void> _initializeDashboard() async {
-    // 1. Call your APIs first
-    await getInProgressRooms();
+  // ------------------ INIT STORE -----------------------
+  Future<void> initStoreInfo() async {
+    _available = await _inAppPurchase.isAvailable();
+    if (!_available) {
+      log("In-app purchase not available");
+      return;
+    }
 
-    // 2. Set the deep link callback
-    DeepLinkManager.instance.setJoinRoomCallback((gameCode) async {
-      await joinRoom(gameCode);
-    });
+    // Listen for purchase updates
+    _subscription = _inAppPurchase.purchaseStream.listen(
+      _listenToPurchaseUpdated,
+      onDone: () => _subscription?.cancel(),
+      onError: (error) => log("Purchase stream error: $error"),
+    );
 
-    // 3. Start listening for new deep links
-    DeepLinkManager.instance.startListening();
+    const Set<String> ids = {'extra_players'};
+    final ProductDetailsResponse response =
+    await _inAppPurchase.queryProductDetails(ids);
 
-    // 4. Handle any pending deep link from cold start
-    await DeepLinkManager.instance.handlePendingLink();
+    if (response.error != null) {
+      log("Product query error: ${response.error}");
+      return;
+    }
+
+    if (response.notFoundIDs.isNotEmpty) {
+      log("Product not found: ${response.notFoundIDs}");
+      return;
+    }
+
+    _products = response.productDetails;
+    log("Products loaded: ${_products.length}");
   }
+
+  void _listenToPurchaseUpdated(List<PurchaseDetails> purchases) {
+    for (final purchase in purchases) {
+      if (purchase.status == PurchaseStatus.purchased ||
+          purchase.status == PurchaseStatus.restored) {
+        _handlePurchaseSuccess(purchase);
+      } else if (purchase.status == PurchaseStatus.error) {
+        log("Purchase error: ${purchase.error}");
+        customSnack(
+          text: "Purchase failed".tr(),
+          context: navigatorKey.currentContext!,
+          isSuccess: false,
+        );
+      }
+      if (purchase.pendingCompletePurchase) {
+        _inAppPurchase.completePurchase(purchase);
+      }
+    }
+  }
+
+  Future<void> _handlePurchaseSuccess(PurchaseDetails purchase) async {
+    log("Purchase successful: ${purchase.productID}");
+
+    // Extract the server verification token
+    final token = purchase.verificationData.serverVerificationData;
+
+    // Send it to your backend for validation and unlocking
+    // await userRepo.verifyPurchaseOnServer(
+    //   productId: purchase.productID,
+    //   purchaseToken: token,
+    //   purchaseId: purchase.purchaseID ?? '',
+    //   transactionDate: purchase.transactionDate,
+    // );
+
+    // Then show success
+    customSnack(
+      text: "purchase_success".tr(),
+      context: navigatorKey.currentContext!,
+      isSuccess: true,
+    );
+
+    // Complete the transaction
+    if (purchase.pendingCompletePurchase) {
+      await _inAppPurchase.completePurchase(purchase);
+    }
+  }
+
 
   @override
   void dispose() {
+    _subscription?.cancel();
     DeepLinkManager.instance.clearCallback();
     super.dispose();
   }
 
-  showCreateRoomSheet() {
+  // ------------------ DASHBOARD INIT -----------------------
+  Future<void> _initializeDashboard() async {
+    await getInProgressRooms();
+
+    DeepLinkManager.instance.setJoinRoomCallback((gameCode) async {
+      await joinRoom(gameCode);
+    });
+
+    DeepLinkManager.instance.startListening();
+    await DeepLinkManager.instance.handlePendingLink();
+  }
+
+  // ------------------ CREATE ROOM -----------------------
+  void showCreateRoomSheet() {
     TextEditingController roomController = TextEditingController();
     TextEditingController playerController = TextEditingController(text: "2");
 
@@ -82,9 +168,9 @@ class DashboardVm extends BaseVm {
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.only(
-              bottom: MediaQuery.of(
-                navigatorKey.currentContext!,
-              ).viewInsets.bottom,
+              bottom: MediaQuery.of(navigatorKey.currentContext!)
+                  .viewInsets
+                  .bottom,
             ),
             child: Form(
               key: formKey,
@@ -115,7 +201,6 @@ class DashboardVm extends BaseVm {
                           },
                         ),
                         SizedBox(height: 10.h),
-
                         CustomText(
                           text: "create_room_select_players".tr(),
                           fontFamily: "Kanit",
@@ -145,7 +230,7 @@ class DashboardVm extends BaseVm {
                     ),
                   ),
                   SizedBox(height: 10.h),
-                  Divider(),
+                  const Divider(),
                 ],
               ),
             ),
@@ -154,7 +239,7 @@ class DashboardVm extends BaseVm {
       ),
       onConfirmPressed: () async {
         if (!formKey.currentState!.validate()) return;
-        if(int.parse(playerController.text.trim()) > 4){
+        if (int.parse(playerController.text.trim()) > 4) {
           showBuyPlayerSheet();
           return;
         }
@@ -167,176 +252,18 @@ class DashboardVm extends BaseVm {
           maxPlayers: int.parse(playerController.text.trim()),
           difficulty: "medium",
           timeLimit: 300,
-          invitedUsers: [
-            "68d5780e7c37125af123beba"
-          ],
+          invitedUsers: ["68d5780e7c37125af123beba"],
         );
         await createRoom(createRoomBody);
       },
     );
   }
 
-  showJoinRoomSheet() {
-    TextEditingController roomCodeController = TextEditingController();
-    if(kDebugMode){
-      roomCodeController.text = "9F67D77C";
-    }
-    final formKey = GlobalKey<FormState>();
-
-    showCustomSheetWithContent(
-      children: Directionality(
-        textDirection: navigatorKey.currentContext!.locale.languageCode == 'ar'
-            ? ui.TextDirection.rtl
-            : ui.TextDirection.ltr,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(
-                navigatorKey.currentContext!,
-              ).viewInsets.bottom,
-            ),
-            child: Form(
-              key: formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomText(
-                          text: "join_room_code_label".tr(),
-                          fontFamily: "Kanit",
-                          fontWeight: FontWeight.w500,
-                          fontSize: 18.sp,
-                        ),
-                        CustomTextField(
-                          controller: roomCodeController,
-                          prefix: "kamra",
-                          hintText: "join_room_code_hint".tr(),
-                          keyboardType: TextInputType.text,
-                          validator: (v) {
-                            if (v == null || v.isEmpty) {
-                              return "join_room_code_required".tr();
-                            }
-                            return null;
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 10.h),
-                  Divider(),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-      onConfirmPressed: () async {
-        if (!formKey.currentState!.validate()) return;
-
-        Navigator.pop(navigatorKey.currentContext!);
-        showLoaderDialog();
-
-        await joinRoom(roomCodeController.text.trim());
-      },
-    );
-  }
-
-  showLoaderDialog() {
-    return showDialog(
-      barrierDismissible: false,
-      context: navigatorKey.currentContext!,
-      builder: (ctx) {
-        return Center(
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              borderRadius: BorderRadius.circular(20.r),
-            ),
-            height: 200.h,
-            width: AppConstants.getScreenWidth(ctx) * 0.8,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    SvgPicture.asset("circle".toSvgPath),
-                    CupertinoActivityIndicator(color: Colors.white),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  bool _isLoading = false;
-
-  createRoom(CreateRoomBody body) async {
-    ApiResponse apiResponse = await userRepo.createGameRoom(body: body);
-    if (apiResponse.response != null &&
-        (apiResponse.response?.statusCode == 200 ||
-            apiResponse.response?.statusCode == 201)) {
-      AppConstants.roomData =
-          RoomCreatedResponse.fromJson(apiResponse.response?.data);
-      Navigator.pop(navigatorKey.currentContext!);
-      Navigator.pushNamed(navigatorKey.currentContext!, WaitingRoom.routeName, arguments: AppConstants.roomData.room!.code);
-      _isLoading = false;
-      notifyListeners();
-    } else {
-      Navigator.pop(navigatorKey.currentContext!);
-      customSnack(
-        text: apiResponse.error!.toString(),
-        context: navigatorKey.currentContext!,
-        isSuccess: false,
-      );
-
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  joinRoom(String roomCode) async {
-    ApiResponse apiResponse = await userRepo.joinGameRoom(roomCode: roomCode);
-    if (apiResponse.response != null &&
-        (apiResponse.response?.statusCode == 200 ||
-            apiResponse.response?.statusCode == 201)) {
-      AppConstants.roomData =
-          RoomCreatedResponse.fromJson(apiResponse.response?.data);
-      Navigator.pop(navigatorKey.currentContext!);
-      if(AppConstants.roomData.room != null && AppConstants.roomData.room!.status == "IN_PROGRESS"){
-        customSnack(
-          text: "Room is already in progress".tr(),
-          context: navigatorKey.currentContext!,
-          isSuccess: false,
-        );
-        return;
-
-      }
-      Navigator.pushNamed(navigatorKey.currentContext!, WaitingRoom.routeName,arguments: AppConstants.roomData.room!.code);
-      _isLoading = false;
-      notifyListeners();
-    } else {
-      Navigator.pop(navigatorKey.currentContext!);
-      customSnack(
-        text: apiResponse.error!.toString(),
-        context: navigatorKey.currentContext!,
-        isSuccess: false,
-      );
-
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
+  // ------------------ BUY PLAYERS -----------------------
   void showBuyPlayerSheet() {
+    final product =
+    _products.isNotEmpty ? _products.firstWhere((p) => p.id == _productId) : null;
+
     showCustomSheetWithContent(
       children: Directionality(
         textDirection: navigatorKey.currentContext!.locale.languageCode == 'ar'
@@ -364,13 +291,11 @@ class DashboardVm extends BaseVm {
                     fontFamily: "Kanit",
                   ),
                   SizedBox(height: 20.h),
-
                 ],
               ),
             ),
             const Divider(),
             SizedBox(height: 10.h),
-
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18.0),
               child: Row(
@@ -385,8 +310,7 @@ class DashboardVm extends BaseVm {
                   ),
                   const Spacer(),
                   CustomText(
-                    text:
-                    "5\$",
+                    text: product?.price ?? "\$5.00",
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
                     fontFamily: "Kanit",
@@ -399,30 +323,132 @@ class DashboardVm extends BaseVm {
           ],
         ),
       ),
-      onConfirmPressed: () {
+      onConfirmPressed: () async {
         Navigator.pop(navigatorKey.currentContext!);
-
-        customSnack(
-          text: "purchase_success".tr(),
-          context: navigatorKey.currentContext!,
-          isSuccess: true,
-        );
+        await buyExtraPlayers();
       },
       confirmText: "buy_now".tr(),
     );
   }
 
-  getInProgressRooms() async {
+  Future<void> buyExtraPlayers() async {
+    if (!_available) {
+      customSnack(
+        text: "Store not available".tr(),
+        context: navigatorKey.currentContext!,
+        isSuccess: false,
+      );
+      return;
+    }
+
+    if (_products.isEmpty) {
+      customSnack(
+        text: "No product found".tr(),
+        context: navigatorKey.currentContext!,
+        isSuccess: false,
+      );
+      return;
+    }
+
+    final product = _products.firstWhere((p) => p.id == _productId);
+    final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
+    await _inAppPurchase.buyConsumable(purchaseParam: purchaseParam);
+  }
+
+  // ------------------ OTHER METHODS -----------------------
+  void showLoaderDialog() {
+    showDialog(
+      barrierDismissible: false,
+      context: navigatorKey.currentContext!,
+      builder: (ctx) => Center(
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColors.primary,
+            borderRadius: BorderRadius.circular(20.r),
+          ),
+          height: 200.h,
+          width: AppConstants.getScreenWidth(ctx) * 0.8,
+          child: const CupertinoActivityIndicator(color: Colors.white),
+        ),
+      ),
+    );
+  }
+
+  bool _isLoading = false;
+
+  Future<void> createRoom(CreateRoomBody body) async {
+    ApiResponse apiResponse = await userRepo.createGameRoom(body: body);
+    if (apiResponse.response != null &&
+        (apiResponse.response?.statusCode == 200 ||
+            apiResponse.response?.statusCode == 201)) {
+      AppConstants.roomData =
+          RoomCreatedResponse.fromJson(apiResponse.response?.data);
+      Navigator.pop(navigatorKey.currentContext!);
+      Navigator.pushNamed(navigatorKey.currentContext!, WaitingRoom.routeName,
+          arguments: AppConstants.roomData.room!.code);
+      _isLoading = false;
+      notifyListeners();
+    } else {
+      Navigator.pop(navigatorKey.currentContext!);
+      customSnack(
+        text: apiResponse.error!.toString(),
+        context: navigatorKey.currentContext!,
+        isSuccess: false,
+      );
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> joinRoom(String roomCode) async {
+    ApiResponse apiResponse = await userRepo.joinGameRoom(roomCode: roomCode);
+    if (apiResponse.response != null &&
+        (apiResponse.response?.statusCode == 200 ||
+            apiResponse.response?.statusCode == 201)) {
+      AppConstants.roomData =
+          RoomCreatedResponse.fromJson(apiResponse.response?.data);
+      Navigator.pop(navigatorKey.currentContext!);
+      if (AppConstants.roomData.room != null &&
+          AppConstants.roomData.room!.status == "IN_PROGRESS") {
+        customSnack(
+          text: "Room is already in progress".tr(),
+          context: navigatorKey.currentContext!,
+          isSuccess: false,
+        );
+        return;
+      }
+      Navigator.pushNamed(navigatorKey.currentContext!, WaitingRoom.routeName,
+          arguments: AppConstants.roomData.room!.code);
+      _isLoading = false;
+      notifyListeners();
+    } else {
+      Navigator.pop(navigatorKey.currentContext!);
+      customSnack(
+        text: apiResponse.error!.toString(),
+        context: navigatorKey.currentContext!,
+        isSuccess: false,
+      );
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> getInProgressRooms() async {
     ApiResponse apiResponse = await userRepo.inProgressRooms();
     if (apiResponse.response != null &&
         (apiResponse.response?.statusCode == 200 ||
             apiResponse.response?.statusCode == 201)) {
       ProgressRooms progressRooms =
       ProgressRooms.fromJson(apiResponse.response?.data);
-      if(progressRooms.rooms == null || progressRooms.rooms!.isEmpty){
+      if (progressRooms.rooms == null || progressRooms.rooms!.isEmpty) {
         return;
       }
-      Navigator.pushNamedAndRemoveUntil(navigatorKey.currentState!.context, GameRoom.routeName, arguments: progressRooms.rooms!.first.code!, (R)=>false );
+      Navigator.pushNamedAndRemoveUntil(
+        navigatorKey.currentState!.context,
+        GameRoom.routeName,
+        arguments: progressRooms.rooms!.first.code!,
+            (R) => false,
+      );
       notifyListeners();
     } else {
       customSnack(
@@ -430,9 +456,52 @@ class DashboardVm extends BaseVm {
         context: navigatorKey.currentContext!,
         isSuccess: false,
       );
-
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  showJoinRoomSheet() {
+    TextEditingController roomCodeController = TextEditingController();
+    if (kDebugMode) {
+      roomCodeController.text = "9F67D77C";
+    }
+    final formKey = GlobalKey<FormState>();
+    showCustomSheetWithContent(
+      children: Directionality(
+        textDirection: navigatorKey.currentContext!.locale.languageCode == 'ar'
+            ? ui.TextDirection.rtl
+            : ui.TextDirection.ltr, child: SingleChildScrollView(child: Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery
+            .of(navigatorKey.currentContext!,)
+            .viewInsets
+            .bottom,), child: Form(
+        key: formKey, child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start, children: [ Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0), child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start, children: [
+        CustomText(
+          text: "join_room_code_label".tr(),
+          fontFamily: "Kanit",
+          fontWeight: FontWeight.w500,
+          fontSize: 18.sp,),
+        CustomTextField(
+          controller: roomCodeController,
+          prefix: "kamra",
+          hintText: "join_room_code_hint".tr(),
+          keyboardType: TextInputType.text,
+          validator: (v) {
+            if (v == null || v.isEmpty) {
+              return "join_room_code_required".tr();
+            }
+            return null;
+          },),
+      ],),), SizedBox(height: 10.h), Divider(),
+      ],),),),),), onConfirmPressed: () async {
+      if (!formKey.currentState!.validate()) return;
+      Navigator.pop(navigatorKey.currentContext!);
+      showLoaderDialog();
+      await joinRoom(roomCodeController.text.trim());
+    },);
   }
 }

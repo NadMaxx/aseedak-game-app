@@ -1,6 +1,6 @@
 name: aseedak
 description: "A new Flutter project."
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ^3.7.2
@@ -33,6 +33,7 @@ dependencies:
   app_links: ^6.4.1
   firebase_core:
   share_plus:
+  in_app_purchase:
 dev_dependencies:
   flutter_test:
     sdk: flutter
