@@ -93,6 +93,45 @@ class UserRepo {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
     }
   }
+
+  updateMaxPlayers({required String paymentIntendId,required dynamic amount}) async {
+    try {
+      Response response = await dioClient.post(
+        ApiEndPoints.updateMaxPlayers,
+        data: {
+          "newMaxMembers": 8,
+          "paymentIntentId": paymentIntendId,
+          "amount": amount
+        }
+      );
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+  getAvatars() async {
+    try {
+      Response response = await dioClient.get(
+        ApiEndPoints.getAvatars,
+      );
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+  updateUser(String key,int val) async {
+    try {
+      Response response = await dioClient.put(
+        ApiEndPoints.updateUser,
+        data: {
+          key : val
+        }
+      );
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
   inProgressRooms() async {
     try {
       Response response = await dioClient.get(

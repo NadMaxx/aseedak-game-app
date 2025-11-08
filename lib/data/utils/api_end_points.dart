@@ -22,6 +22,11 @@ class ApiEndPoints{
   static const String gameRoomCreate = "game-rooms/create";
   static const String joinRoom = "game-rooms/";
 
+  //purchase
+  static const String updateMaxPlayers = "mobile/purchases/update-max-members";
+  static const String getAvatars = "mobile/characters";
+  static const String updateUser = "user/update";
+
 
 
 }

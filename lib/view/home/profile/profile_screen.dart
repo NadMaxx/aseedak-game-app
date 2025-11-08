@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:aseedak/data/utils/app_colors.dart';
 import 'package:aseedak/data/utils/string_helpers.dart';
 import 'package:aseedak/view/home/profile/buy_avatar/buy_avatar.dart';
+import 'package:aseedak/view/home/profile/buy_games/buy_games.dart';
 import 'package:aseedak/view/home/profile/policies/policies_page.dart';
 import 'package:aseedak/view/home/profile/profile_settings/profile_settings.dart';
 import 'package:aseedak/view/home/profile/profile_vm.dart';
@@ -87,6 +88,13 @@ class ProfileScreen extends StatelessWidget {
                   },
                 ),
                 buildListTile(
+                  "bandy",
+                  "buy_games_title".tr(),
+                      () {
+                    Navigator.pushNamed(context, BuyGamesScreen.routeName);
+                  },
+                ),
+                buildListTile(
                   "taala",
                   "profile_change_password".tr(),
                       () {
@@ -129,7 +137,9 @@ class ProfileScreen extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           SvgPicture.asset("square".toSvgPath),
-          Image.asset(image.toPngPath, height: 24.h, width: 24.w),
+          Image.asset(
+            image.contains("bandy") ? "assets/pngs/fields/bandy.png" :
+              image.toPngPath, height: 24.h, width: 24.w),
         ],
       ),
       title: CustomText(

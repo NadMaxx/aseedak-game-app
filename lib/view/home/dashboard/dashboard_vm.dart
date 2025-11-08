@@ -43,7 +43,7 @@ class DashboardVm extends BaseVm {
 
   bool _available = false;
   List<ProductDetails> _products = [];
-  final String _productId = 'extra_players';
+  final String _productId = 'extra_player';
 
   DashboardVm() {
     _initializeDashboard();
@@ -115,6 +115,9 @@ class DashboardVm extends BaseVm {
     //   purchaseId: purchase.purchaseID ?? '',
     //   transactionDate: purchase.transactionDate,
     // );
+    updatePlayersMaxToServer(
+        token , 3
+    );
 
     // Then show success
     customSnack(
@@ -223,6 +226,9 @@ class DashboardVm extends BaseVm {
                             if (players < 2) {
                               return "create_room_players_min".tr();
                             }
+                            if (players > 8) {
+                              return "player_error".tr();
+                            }
                             return null;
                           },
                         ),
@@ -239,10 +245,10 @@ class DashboardVm extends BaseVm {
       ),
       onConfirmPressed: () async {
         if (!formKey.currentState!.validate()) return;
-        if (int.parse(playerController.text.trim()) > 4) {
-          showBuyPlayerSheet();
-          return;
-        }
+        // if (int.parse(playerController.text.trim()) > 4) {
+        //   showBuyPlayerSheet();
+        //   return;
+        // }
         Navigator.pop(navigatorKey.currentContext!);
         showLoaderDialog();
 
@@ -390,6 +396,10 @@ class DashboardVm extends BaseVm {
       notifyListeners();
     } else {
       Navigator.pop(navigatorKey.currentContext!);
+      if(apiResponse.error.toString().toLowerCase().contains("upgrade")) {
+        showBuyPlayerSheet();
+        return;
+      }
       customSnack(
         text: apiResponse.error!.toString(),
         context: navigatorKey.currentContext!,
@@ -503,5 +513,24 @@ class DashboardVm extends BaseVm {
       showLoaderDialog();
       await joinRoom(roomCodeController.text.trim());
     },);
+  }
+
+  updatePlayersMaxToServer(String paymentId, dynamic amount) async {
+    updateUserData();
+    ApiResponse apiResponse = await userRepo.updateMaxPlayers(
+      paymentIntendId: paymentId,
+      amount: amount,
+    );
+    if (apiResponse.response != null &&
+        (apiResponse.response?.statusCode == 200 ||
+            apiResponse.response?.statusCode == 201)) {
+     customSnack(
+       text: "Max players updated successfully".tr(),
+       context: navigatorKey.currentContext!, isSuccess: true,
+     );
+    }
+  }
+  updateUserData() async {
+    ApiResponse apiResponse = await userRepo.updateUser("maxMembers", 8);
   }
 }

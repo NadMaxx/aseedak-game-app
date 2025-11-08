@@ -23,6 +23,8 @@ import '../data/models/passModels/SuccessPassModel.dart';
 import '../view/home/dashboard/dashboard_screen.dart';
 import '../view/home/game_room/game_room.dart';
 import '../view/home/profile/buy_avatar/buy_avatar.dart';
+import '../view/home/profile/buy_games/buy_games.dart';
+import '../view/home/profile/buy_games/buy_games_vm.dart';
 import '../view/home/profile/policies/policies_page.dart';
 import '../view/home/profile/profile_screen.dart';
 import '../view/home/profile/profile_settings/profile_settings.dart';
@@ -174,6 +176,13 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           roomCode: roomId
         ),
         child: const GameRoom(),
+      );
+      break;
+      case BuyGamesScreen.routeName:
+      builder =
+          (context) => ChangeNotifierProvider(
+        create: (context) => BuyGamesVm(),
+        child: const BuyGamesScreen(),
       );
       break;
     default:
