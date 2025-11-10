@@ -65,7 +65,7 @@ class DashboardVm extends BaseVm {
       onError: (error) => log("Purchase stream error: $error"),
     );
 
-    const Set<String> ids = {'extra_players'};
+    const Set<String> ids = {'extra_player'};
     final ProductDetailsResponse response =
     await _inAppPurchase.queryProductDetails(ids);
 

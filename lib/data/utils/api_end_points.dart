@@ -25,6 +25,8 @@ class ApiEndPoints{
   //purchase
   static const String updateMaxPlayers = "mobile/purchases/update-max-members";
   static const String getAvatars = "mobile/characters";
+  static const String getDecks = "admin/word-decks";
+  static const String getUserDecks = "user/word-decks";
   static const String updateUser = "user/update";
 
 

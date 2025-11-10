@@ -119,7 +119,7 @@ class UserRepo {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
     }
   }
-  updateUser(String key,int val) async {
+  updateUser(String key,dynamic val) async {
     try {
       Response response = await dioClient.put(
         ApiEndPoints.updateUser,
@@ -136,6 +136,28 @@ class UserRepo {
     try {
       Response response = await dioClient.get(
         "${ApiEndPoints.joinRoom}inprogress",
+      );
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+
+  getWordDecks() async {
+    try {
+      Response response = await dioClient.get(
+          ApiEndPoints.getDecks,
+      );
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+
+  getUserDecks() async{
+    try {
+      Response response = await dioClient.get(
+        ApiEndPoints.getUserDecks,
       );
       return ApiResponse.withSuccess(response);
     } catch (e) {

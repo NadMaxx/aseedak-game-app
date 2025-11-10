@@ -17,6 +17,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
+import 'buy_decks/buy_decks.dart';
+
 class ProfileScreen extends StatelessWidget {
   static const String routeName = '/profile';
 
@@ -95,6 +97,13 @@ class ProfileScreen extends StatelessWidget {
                   },
                 ),
                 buildListTile(
+                  "a",
+                  "buy_word_deck_title".tr(),
+                      () {
+                    Navigator.pushNamed(context, BuyWordDeckScreen.routeName);
+                  },
+                ),
+                buildListTile(
                   "taala",
                   "profile_change_password".tr(),
                       () {
@@ -137,6 +146,8 @@ class ProfileScreen extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           SvgPicture.asset("square".toSvgPath),
+          image == "a" ?
+          ThickShadowText(text: "A")  :
           Image.asset(
             image.contains("bandy") ? "assets/pngs/fields/bandy.png" :
               image.toPngPath, height: 24.h, width: 24.w),

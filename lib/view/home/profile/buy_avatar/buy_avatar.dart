@@ -119,7 +119,7 @@ class BuyAvatarScreen extends StatelessWidget {
                                   ),
                                 ),
                                 child: CustomText(
-                                  text: "\$${avatar.price.toStringAsFixed(2)}",
+                                  text: "\$3",
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.bold,
                                   fontFamily: "Kanit",
