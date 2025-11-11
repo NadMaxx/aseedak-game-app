@@ -112,7 +112,7 @@ class BuyWordDeckVm extends ChangeNotifier {
 
         // ✅ Mark decks as purchased if user already owns them
         for (var deck in _decks) {
-          if (_decksUser.any((userDeck) => userDeck.id == deck.id)) {
+          if (_decksUser.any((userDeck) => userDeck.id == deck.id && userDeck.isPurchased)) {
             log("Marking deck as purchased: ${deck.id}");
             deck.isPurchased = true;
           }
