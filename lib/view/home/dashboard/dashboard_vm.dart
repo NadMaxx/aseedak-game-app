@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io' show Platform;
 import 'dart:ui' as ui;
 
 import 'package:app_links/app_links.dart';
@@ -52,52 +53,84 @@ class DashboardVm extends BaseVm {
 
   // ------------------ INIT STORE -----------------------
   Future<void> initStoreInfo() async {
-    _available = await _inAppPurchase.isAvailable();
-    if (!_available) {
-      log("In-app purchase not available");
-      return;
+    try {
+      _available = await _inAppPurchase.isAvailable();
+      if (!_available) {
+        log("In-app purchase not available");
+        return;
+      }
+
+      // Listen for purchase updates
+      _subscription = _inAppPurchase.purchaseStream.listen(
+        _listenToPurchaseUpdated,
+        onDone: () {
+          log("Purchase stream completed");
+          _subscription?.cancel();
+        },
+        onError: (error) {
+          log("Purchase stream error: $error");
+        },
+      );
+
+      // Query product details
+      const Set<String> ids = {'extra_player'};
+      final ProductDetailsResponse response =
+      await _inAppPurchase.queryProductDetails(ids);
+
+      if (response.error != null) {
+        log("Product query error: ${response.error}");
+        return;
+      }
+
+      if (response.notFoundIDs.isNotEmpty) {
+        log("Product not found: ${response.notFoundIDs}");
+        log("Make sure 'extra_player' exists in App Store Connect");
+        return;
+      }
+
+      _products = response.productDetails;
+      log("Products loaded: ${_products.length}");
+
+      // For iOS, restore previous purchases
+      if (Platform.isIOS) {
+        await _inAppPurchase.restorePurchases();
+      }
+    } catch (e) {
+      log("Error initializing store: $e");
     }
-
-    // Listen for purchase updates
-    _subscription = _inAppPurchase.purchaseStream.listen(
-      _listenToPurchaseUpdated,
-      onDone: () => _subscription?.cancel(),
-      onError: (error) => log("Purchase stream error: $error"),
-    );
-
-    const Set<String> ids = {'extra_player'};
-    final ProductDetailsResponse response =
-    await _inAppPurchase.queryProductDetails(ids);
-
-    if (response.error != null) {
-      log("Product query error: ${response.error}");
-      return;
-    }
-
-    if (response.notFoundIDs.isNotEmpty) {
-      log("Product not found: ${response.notFoundIDs}");
-      return;
-    }
-
-    _products = response.productDetails;
-    log("Products loaded: ${_products.length}");
   }
 
-  void _listenToPurchaseUpdated(List<PurchaseDetails> purchases) {
+  void _listenToPurchaseUpdated(List<PurchaseDetails> purchases) async {
     for (final purchase in purchases) {
-      if (purchase.status == PurchaseStatus.purchased ||
-          purchase.status == PurchaseStatus.restored) {
-        _handlePurchaseSuccess(purchase);
+      log("Purchase status: ${purchase.status} for ${purchase.productID}");
+
+      if (purchase.status == PurchaseStatus.pending) {
+        log("Purchase pending...");
+        // Show loading indicator if needed
+      } else if (purchase.status == PurchaseStatus.purchased) {
+        await _handlePurchaseSuccess(purchase);
+      } else if (purchase.status == PurchaseStatus.restored) {
+        await _handlePurchaseRestored(purchase);
       } else if (purchase.status == PurchaseStatus.error) {
         log("Purchase error: ${purchase.error}");
         customSnack(
-          text: "Purchase failed".tr(),
+          text: purchase.error?.message ?? "Purchase failed".tr(),
+          context: navigatorKey.currentContext!,
+          isSuccess: false,
+        );
+      } else if (purchase.status == PurchaseStatus.canceled) {
+        log("Purchase canceled by user");
+        customSnack(
+          text: "Purchase canceled".tr(),
           context: navigatorKey.currentContext!,
           isSuccess: false,
         );
       }
+
+      // CRITICAL: Always complete the purchase for iOS
       if (purchase.pendingCompletePurchase) {
-        _inAppPurchase.completePurchase(purchase);
+        await _inAppPurchase.completePurchase(purchase);
+        log("Purchase completed: ${purchase.productID}");
       }
     }
   }
@@ -105,33 +138,42 @@ class DashboardVm extends BaseVm {
   Future<void> _handlePurchaseSuccess(PurchaseDetails purchase) async {
     log("Purchase successful: ${purchase.productID}");
 
-    // Extract the server verification token
-    final token = purchase.verificationData.serverVerificationData;
+    try {
+      // Extract verification data - different for iOS and Android
+      String token;
+      if (Platform.isIOS) {
+        // For iOS, this is the App Store receipt
+        token = purchase.verificationData.serverVerificationData;
+        log("iOS receipt data length: ${token.length}");
+      } else {
+        // For Android, this is the purchase token
+        token = purchase.verificationData.serverVerificationData;
+        log("Android purchase token length: ${token.length}");
+      }
 
-    // Send it to your backend for validation and unlocking
-    // await userRepo.verifyPurchaseOnServer(
-    //   productId: purchase.productID,
-    //   purchaseToken: token,
-    //   purchaseId: purchase.purchaseID ?? '',
-    //   transactionDate: purchase.transactionDate,
-    // );
-    updatePlayersMaxToServer(
-        token , 3
-    );
+      // Send to backend for verification
+      await updatePlayersMaxToServer(token, 3);
 
-    // Then show success
-    customSnack(
-      text: "purchase_success".tr(),
-      context: navigatorKey.currentContext!,
-      isSuccess: true,
-    );
-
-    // Complete the transaction
-    if (purchase.pendingCompletePurchase) {
-      await _inAppPurchase.completePurchase(purchase);
+      customSnack(
+        text: "purchase_success".tr(),
+        context: navigatorKey.currentContext!,
+        isSuccess: true,
+      );
+    } catch (e) {
+      log("Error handling purchase: $e");
+      customSnack(
+        text: "Error processing purchase".tr(),
+        context: navigatorKey.currentContext!,
+        isSuccess: false,
+      );
     }
   }
 
+  Future<void> _handlePurchaseRestored(PurchaseDetails purchase) async {
+    log("Purchase restored: ${purchase.productID}");
+    // Handle restored purchase (same as success for consumables)
+    await _handlePurchaseSuccess(purchase);
+  }
 
   @override
   void dispose() {
@@ -245,10 +287,6 @@ class DashboardVm extends BaseVm {
       ),
       onConfirmPressed: () async {
         if (!formKey.currentState!.validate()) return;
-        // if (int.parse(playerController.text.trim()) > 4) {
-        //   showBuyPlayerSheet();
-        //   return;
-        // }
         Navigator.pop(navigatorKey.currentContext!);
         showLoaderDialog();
 
@@ -267,8 +305,12 @@ class DashboardVm extends BaseVm {
 
   // ------------------ BUY PLAYERS -----------------------
   void showBuyPlayerSheet() {
-    final product =
-    _products.isNotEmpty ? _products.firstWhere((p) => p.id == _productId) : null;
+    final product = _products.isNotEmpty
+        ? _products.firstWhere(
+          (p) => p.id == _productId,
+      orElse: () => _products.first,
+    )
+        : null;
 
     showCustomSheetWithContent(
       children: Directionality(
@@ -349,16 +391,50 @@ class DashboardVm extends BaseVm {
 
     if (_products.isEmpty) {
       customSnack(
-        text: "No product found".tr(),
+        text: "No product found. Please try again.".tr(),
         context: navigatorKey.currentContext!,
         isSuccess: false,
       );
       return;
     }
 
-    final product = _products.firstWhere((p) => p.id == _productId);
-    final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
-    await _inAppPurchase.buyConsumable(purchaseParam: purchaseParam);
+    try {
+      final product = _products.firstWhere(
+            (p) => p.id == _productId,
+        orElse: () => _products.first,
+      );
+
+      log("Initiating purchase for: ${product.id}");
+
+      final PurchaseParam purchaseParam = PurchaseParam(
+        productDetails: product,
+        applicationUserName: null, // Optional: Add user identifier
+      );
+
+      // IMPORTANT: Use buyNonConsumable for non-consumable products (permanent unlocks)
+      // Use buyConsumable for consumable products (can be purchased multiple times)
+      final bool purchaseResult = await _inAppPurchase.buyNonConsumable(
+        purchaseParam: purchaseParam,
+      );
+
+      if (!purchaseResult) {
+        log("Purchase initiation failed");
+        customSnack(
+          text: "Failed to start purchase".tr(),
+          context: navigatorKey.currentContext!,
+          isSuccess: false,
+        );
+      } else {
+        log("Purchase initiated successfully");
+      }
+    } catch (e) {
+      log("Error initiating purchase: $e");
+      customSnack(
+        text: "Error: ${e.toString()}",
+        context: navigatorKey.currentContext!,
+        isSuccess: false,
+      );
+    }
   }
 
   // ------------------ OTHER METHODS -----------------------
@@ -396,7 +472,7 @@ class DashboardVm extends BaseVm {
       notifyListeners();
     } else {
       Navigator.pop(navigatorKey.currentContext!);
-      if(apiResponse.error.toString().toLowerCase().contains("upgrade")) {
+      if (apiResponse.error.toString().toLowerCase().contains("upgrade")) {
         showBuyPlayerSheet();
         return;
       }
@@ -481,38 +557,60 @@ class DashboardVm extends BaseVm {
       children: Directionality(
         textDirection: navigatorKey.currentContext!.locale.languageCode == 'ar'
             ? ui.TextDirection.rtl
-            : ui.TextDirection.ltr, child: SingleChildScrollView(child: Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery
-            .of(navigatorKey.currentContext!,)
-            .viewInsets
-            .bottom,), child: Form(
-        key: formKey, child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start, children: [ Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0), child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start, children: [
-        CustomText(
-          text: "join_room_code_label".tr(),
-          fontFamily: "Kanit",
-          fontWeight: FontWeight.w500,
-          fontSize: 18.sp,),
-        CustomTextField(
-          controller: roomCodeController,
-          prefix: "kamra",
-          hintText: "join_room_code_hint".tr(),
-          keyboardType: TextInputType.text,
-          validator: (v) {
-            if (v == null || v.isEmpty) {
-              return "join_room_code_required".tr();
-            }
-            return null;
-          },),
-      ],),), SizedBox(height: 10.h), Divider(),
-      ],),),),),), onConfirmPressed: () async {
-      if (!formKey.currentState!.validate()) return;
-      Navigator.pop(navigatorKey.currentContext!);
-      showLoaderDialog();
-      await joinRoom(roomCodeController.text.trim());
-    },);
+            : ui.TextDirection.ltr,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(navigatorKey.currentContext!)
+                  .viewInsets
+                  .bottom,
+            ),
+            child: Form(
+              key: formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomText(
+                          text: "join_room_code_label".tr(),
+                          fontFamily: "Kanit",
+                          fontWeight: FontWeight.w500,
+                          fontSize: 18.sp,
+                        ),
+                        CustomTextField(
+                          controller: roomCodeController,
+                          prefix: "kamra",
+                          hintText: "join_room_code_hint".tr(),
+                          keyboardType: TextInputType.text,
+                          validator: (v) {
+                            if (v == null || v.isEmpty) {
+                              return "join_room_code_required".tr();
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 10.h),
+                  const Divider(),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+      onConfirmPressed: () async {
+        if (!formKey.currentState!.validate()) return;
+        Navigator.pop(navigatorKey.currentContext!);
+        showLoaderDialog();
+        await joinRoom(roomCodeController.text.trim());
+      },
+    );
   }
 
   updatePlayersMaxToServer(String paymentId, dynamic amount) async {
@@ -524,12 +622,14 @@ class DashboardVm extends BaseVm {
     if (apiResponse.response != null &&
         (apiResponse.response?.statusCode == 200 ||
             apiResponse.response?.statusCode == 201)) {
-     customSnack(
-       text: "Max players updated successfully".tr(),
-       context: navigatorKey.currentContext!, isSuccess: true,
-     );
+      customSnack(
+        text: "Max players updated successfully".tr(),
+        context: navigatorKey.currentContext!,
+        isSuccess: true,
+      );
     }
   }
+
   updateUserData() async {
     ApiResponse apiResponse = await userRepo.updateUser("maxMembers", 8);
   }
