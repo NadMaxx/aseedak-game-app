@@ -305,12 +305,16 @@ class DashboardVm extends BaseVm {
 
   // ------------------ BUY PLAYERS -----------------------
   void showBuyPlayerSheet() {
-    final product = _products.isNotEmpty
-        ? _products.firstWhere(
-          (p) => p.id == _productId,
-      orElse: () => _products.first,
-    )
-        : null;
+    ProductDetails? product;
+
+    if (_products.isNotEmpty) {
+      try {
+        product = _products.firstWhere((p) => p.id == _productId);
+      } catch (e) {
+        // If product not found, use first available
+        product = _products.first;
+      }
+    }
 
     showCustomSheetWithContent(
       children: Directionality(
@@ -399,10 +403,17 @@ class DashboardVm extends BaseVm {
     }
 
     try {
-      final product = _products.firstWhere(
-            (p) => p.id == _productId,
-        orElse: () => _products.first,
-      );
+      // Find the product without using orElse
+      ProductDetails? product;
+      for (var p in _products) {
+        if (p.id == _productId) {
+          product = p;
+          break;
+        }
+      }
+
+      // If exact product not found, use first available
+      product ??= _products.first;
 
       log("Initiating purchase for: ${product.id}");
 
