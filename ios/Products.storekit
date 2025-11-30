@@ -15,6 +15,106 @@
   ],
   "products" : [
     {
+      "displayPrice" : "4.99",
+      "familyShareable" : false,
+      "internalID" : "6755920955",
+      "localizations" : [
+        {
+          "description" : "Buy 10 more games to play more",
+          "displayName" : "Buy 10 games",
+          "locale" : "en_GB"
+        },
+        {
+          "description" : "اشتري 10 ألعاب للعب المزيد",
+          "displayName" : "شراء 10 ألعاب",
+          "locale" : "ar"
+        }
+      ],
+      "productID" : "buy_10_games",
+      "referenceName" : "Buy 10 Games",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "9.99",
+      "familyShareable" : false,
+      "internalID" : "6755921033",
+      "localizations" : [
+        {
+          "description" : "اشتري 25 لعبة لتلعب المزيد",
+          "displayName" : "شراء 25 لعبة",
+          "locale" : "ar"
+        },
+        {
+          "description" : "Buy 25 more games to play more",
+          "displayName" : "Buy 25 games",
+          "locale" : "en_GB"
+        }
+      ],
+      "productID" : "buy_25_games",
+      "referenceName" : "Buy 25 Games",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "2.99",
+      "familyShareable" : false,
+      "internalID" : "6755920750",
+      "localizations" : [
+        {
+          "description" : "اشتري 5 ألعاب للعب المزيد",
+          "displayName" : "اشتري 5 العاب",
+          "locale" : "ar"
+        },
+        {
+          "description" : "Buy 5 more games to play more",
+          "displayName" : "Buy 5 games",
+          "locale" : "en_GB"
+        }
+      ],
+      "productID" : "buy_5_games",
+      "referenceName" : "Buy 5 Games",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "2.99",
+      "familyShareable" : false,
+      "internalID" : "6755920731",
+      "localizations" : [
+        {
+          "description" : "يمكنك زيادة عدد الصور الرمزية الخاصة بك من القائمة",
+          "displayName" : "شراء الصورة الرمزية",
+          "locale" : "ar"
+        },
+        {
+          "description" : "You can increase your number of avatars",
+          "displayName" : "Buy Avatar",
+          "locale" : "en_GB"
+        }
+      ],
+      "productID" : "buy_avatar",
+      "referenceName" : "Buy Avatar",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "2.99",
+      "familyShareable" : false,
+      "internalID" : "6755920881",
+      "localizations" : [
+        {
+          "description" : "Buy Word Decks to make your games more interesting",
+          "displayName" : "Buy Word Decks",
+          "locale" : "en_GB"
+        },
+        {
+          "description" : "اشترِ مجموعات الكلمات لجعل ألعابك أكثر إثارة للاهتمام",
+          "displayName" : "شراء تشكيلات الكلمات",
+          "locale" : "ar"
+        }
+      ],
+      "productID" : "buy_word_deck",
+      "referenceName" : "Buy Word Decks",
+      "type" : "NonConsumable"
+    },
+    {
       "displayPrice" : "5.0",
       "familyShareable" : false,
       "internalID" : "6754533393",
@@ -43,7 +143,7 @@
     "_developerTeamID" : "53FZQBRU6W",
     "_disableDialogs" : false,
     "_failTransactionsEnabled" : false,
-    "_lastSynchronizedDate" : 786107782.89029205,
+    "_lastSynchronizedDate" : 786162487.72232699,
     "_locale" : "en_US",
     "_renewalBillingIssuesEnabled" : false,
     "_storefront" : "USA",

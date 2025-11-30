@@ -120,16 +120,16 @@ class BuyGamesVm extends BaseVm {
 
   // ------------------ PURCHASE FLOW -----------------------
   Future<void> buyProduct(ProductDetails product) async {
-    if (kDebugMode) {
-      // ✅ Mock purchase success for debug testing
-      log("🧪 Mock purchase for ${product.id}");
-      customSnack(
-        text: "purchase_success".tr(),
-        context: navigatorKey.currentContext!,
-        isSuccess: true,
-      );
-      return;
-    }
+    // if (kDebugMode) {
+    //   // ✅ Mock purchase success for debug testing
+    //   log("🧪 Mock purchase for ${product.id}");
+    //   customSnack(
+    //     text: "purchase_success".tr(),
+    //     context: navigatorKey.currentContext!,
+    //     isSuccess: true,
+    //   );
+    //   return;
+    // }
 
     if (!_available) {
       customSnack(

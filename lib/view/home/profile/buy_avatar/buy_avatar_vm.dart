@@ -58,12 +58,12 @@ class BuyAvatarVm extends ChangeNotifier {
   Future<void> _init() async {
     await getAvatars();
 
-    if (kDebugMode) {
-      _available = true;
-      _isLoading = false;
-      notifyListeners();
-      return;
-    }
+    // if (kDebugMode) {
+    //   _available = true;
+    //   _isLoading = false;
+    //   notifyListeners();
+    //   return;
+    // }
 
     _available = await _inAppPurchase.isAvailable();
     if (!_available) {
@@ -82,10 +82,10 @@ class BuyAvatarVm extends ChangeNotifier {
   }
 
   Future<void> buyAvatar(Avatar avatar) async {
-    if (kDebugMode) {
-      await _handleAvatarPurchaseSuccess(avatar);
-      return;
-    }
+    // if (kDebugMode) {
+    //   await _handleAvatarPurchaseSuccess(avatar);
+    //   return;
+    // }
 
     if (!_available) {
       customSnack(

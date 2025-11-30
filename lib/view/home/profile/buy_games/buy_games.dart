@@ -1,10 +1,12 @@
 import 'dart:ui' as ui;
 import 'package:aseedak/data/utils/app_colors.dart';
+import 'package:aseedak/data/utils/string_helpers.dart';
 import 'package:aseedak/widgets/customText.dart';
 import 'package:aseedak/widgets/custom_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'buy_games_vm.dart';
 
@@ -24,6 +26,16 @@ class BuyGamesScreen extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
+          leading: InkWell(
+            onTap: () => Navigator.pop(context),
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: RotatedBox(
+                quarterTurns: 2,
+                child: SvgPicture.asset("back".toSvgPath),
+              ),
+            ),
+          ),
           title: CustomText(
             text: "buy_games_title".tr(),
             fontSize: 22.sp,

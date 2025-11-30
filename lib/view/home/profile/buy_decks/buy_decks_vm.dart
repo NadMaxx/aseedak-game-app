@@ -130,17 +130,17 @@ class BuyWordDeckVm extends ChangeNotifier {
   /// Purchase a deck
   Future<void> buyDeck(WordDeck deck) async {
     log("Initiating purchase for deck: ${deck.id}");
-    if (kDebugMode) {
-      deck.isPurchased = true;
-      notifyListeners();
-      customSnack(
-        text: "deck_purchase_success".tr(),
-        context: navigatorKey.currentContext!,
-        isSuccess: true,
-      );
-      await updateUserWithDeck(deck.id);
-      return;
-    }
+    // if (kDebugMode) {
+    //   deck.isPurchased = true;
+    //   notifyListeners();
+    //   customSnack(
+    //     text: "deck_purchase_success".tr(),
+    //     context: navigatorKey.currentContext!,
+    //     isSuccess: true,
+    //   );
+    //   await updateUserWithDeck(deck.id);
+    //   return;
+    // }
 
     final response = await _inAppPurchase.queryProductDetails({'buy_word_deck'});
     if (response.productDetails.isEmpty) {
