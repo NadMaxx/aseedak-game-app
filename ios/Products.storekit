@@ -1,0 +1,62 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "09C491BF",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "5.0",
+      "familyShareable" : false,
+      "internalID" : "6754533393",
+      "localizations" : [
+        {
+          "description" : "Double the fun by adding more friends",
+          "displayName" : "Extra Player",
+          "locale" : "en_GB"
+        },
+        {
+          "description" : "مضاعفة المتعة مع المزيد من اللاعبين",
+          "displayName" : "لاعب إضافي",
+          "locale" : "ar"
+        }
+      ],
+      "productID" : "extra_player",
+      "referenceName" : "Extra Player",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6753641918",
+    "_askToBuyEnabled" : false,
+    "_billingGracePeriodEnabled" : false,
+    "_billingIssuesEnabled" : false,
+    "_developerTeamID" : "53FZQBRU6W",
+    "_disableDialogs" : false,
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 786107782.89029205,
+    "_locale" : "en_US",
+    "_renewalBillingIssuesEnabled" : false,
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+
+    ],
+    "_timeRate" : 0
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

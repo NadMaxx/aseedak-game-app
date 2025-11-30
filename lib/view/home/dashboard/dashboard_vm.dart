@@ -56,7 +56,7 @@ class DashboardVm extends BaseVm {
     try {
       _available = await _inAppPurchase.isAvailable();
       if (!_available) {
-        log("In-app purchase not available");
+        print("In-app purchase not available");
         return;
       }
 
@@ -64,11 +64,11 @@ class DashboardVm extends BaseVm {
       _subscription = _inAppPurchase.purchaseStream.listen(
         _listenToPurchaseUpdated,
         onDone: () {
-          log("Purchase stream completed");
+          print("Purchase stream completed");
           _subscription?.cancel();
         },
         onError: (error) {
-          log("Purchase stream error: $error");
+          print("Purchase stream error: $error");
         },
       );
 
@@ -78,48 +78,48 @@ class DashboardVm extends BaseVm {
       await _inAppPurchase.queryProductDetails(ids);
 
       if (response.error != null) {
-        log("Product query error: ${response.error}");
+        print("Product query error: ${response.error}");
         return;
       }
 
       if (response.notFoundIDs.isNotEmpty) {
-        log("Product not found: ${response.notFoundIDs}");
-        log("Make sure 'extra_player' exists in App Store Connect");
+        print("Product not found: ${response.notFoundIDs}");
+        print("Make sure 'extra_player' exists in App Store Connect");
         return;
       }
 
       _products = response.productDetails;
-      log("Products loaded: ${_products.length}");
+      print("Products loaded: ${_products.length}");
 
       // For iOS, restore previous purchases
       if (Platform.isIOS) {
         await _inAppPurchase.restorePurchases();
       }
     } catch (e) {
-      log("Error initializing store: $e");
+      print("Error initializing store: $e");
     }
   }
 
   void _listenToPurchaseUpdated(List<PurchaseDetails> purchases) async {
     for (final purchase in purchases) {
-      log("Purchase status: ${purchase.status} for ${purchase.productID}");
+      print("Purchase status: ${purchase.status} for ${purchase.productID}");
 
       if (purchase.status == PurchaseStatus.pending) {
-        log("Purchase pending...");
+        print("Purchase pending...");
         // Show loading indicator if needed
       } else if (purchase.status == PurchaseStatus.purchased) {
         await _handlePurchaseSuccess(purchase);
       } else if (purchase.status == PurchaseStatus.restored) {
         await _handlePurchaseRestored(purchase);
       } else if (purchase.status == PurchaseStatus.error) {
-        log("Purchase error: ${purchase.error}");
+        print("Purchase error: ${purchase.error}");
         customSnack(
           text: purchase.error?.message ?? "Purchase failed".tr(),
           context: navigatorKey.currentContext!,
           isSuccess: false,
         );
       } else if (purchase.status == PurchaseStatus.canceled) {
-        log("Purchase canceled by user");
+        print("Purchase canceled by user");
         customSnack(
           text: "Purchase canceled".tr(),
           context: navigatorKey.currentContext!,
@@ -130,13 +130,13 @@ class DashboardVm extends BaseVm {
       // CRITICAL: Always complete the purchase for iOS
       if (purchase.pendingCompletePurchase) {
         await _inAppPurchase.completePurchase(purchase);
-        log("Purchase completed: ${purchase.productID}");
+        print("Purchase completed: ${purchase.productID}");
       }
     }
   }
 
   Future<void> _handlePurchaseSuccess(PurchaseDetails purchase) async {
-    log("Purchase successful: ${purchase.productID}");
+    print("Purchase successful: ${purchase.productID}");
 
     try {
       // Extract verification data - different for iOS and Android
@@ -144,11 +144,11 @@ class DashboardVm extends BaseVm {
       if (Platform.isIOS) {
         // For iOS, this is the App Store receipt
         token = purchase.verificationData.serverVerificationData;
-        log("iOS receipt data length: ${token.length}");
+        print("iOS receipt data length: ${token.length}");
       } else {
         // For Android, this is the purchase token
         token = purchase.verificationData.serverVerificationData;
-        log("Android purchase token length: ${token.length}");
+        print("Android purchase token length: ${token.length}");
       }
 
       // Send to backend for verification
@@ -160,7 +160,7 @@ class DashboardVm extends BaseVm {
         isSuccess: true,
       );
     } catch (e) {
-      log("Error handling purchase: $e");
+      print("Error handling purchase: $e");
       customSnack(
         text: "Error processing purchase".tr(),
         context: navigatorKey.currentContext!,
@@ -170,7 +170,7 @@ class DashboardVm extends BaseVm {
   }
 
   Future<void> _handlePurchaseRestored(PurchaseDetails purchase) async {
-    log("Purchase restored: ${purchase.productID}");
+    print("Purchase restored: ${purchase.productID}");
     // Handle restored purchase (same as success for consumables)
     await _handlePurchaseSuccess(purchase);
   }
@@ -415,7 +415,7 @@ class DashboardVm extends BaseVm {
       // If exact product not found, use first available
       product ??= _products.first;
 
-      log("Initiating purchase for: ${product.id}");
+      print("Initiating purchase for: ${product.id}");
 
       final PurchaseParam purchaseParam = PurchaseParam(
         productDetails: product,
@@ -429,17 +429,17 @@ class DashboardVm extends BaseVm {
       );
 
       if (!purchaseResult) {
-        log("Purchase initiation failed");
+        print("Purchase initiation failed");
         customSnack(
           text: "Failed to start purchase".tr(),
           context: navigatorKey.currentContext!,
           isSuccess: false,
         );
       } else {
-        log("Purchase initiated successfully");
+        print("Purchase initiated successfully");
       }
     } catch (e) {
-      log("Error initiating purchase: $e");
+      print("Error initiating purchase: $e");
       customSnack(
         text: "Error: ${e.toString()}",
         context: navigatorKey.currentContext!,
